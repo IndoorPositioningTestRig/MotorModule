@@ -54,6 +54,7 @@ int desiredPos = 0;
 int desiredSpeed = 0;
 int currentSpeed = 0;
 
+bool direction;
 int acceleration = 0;
 
 String Command = "0";
@@ -125,7 +126,6 @@ void Sm_SettingLength(void)
   Serial.print(desiredPos);
   Serial.print(" Speed: ");
   Serial.println(desiredSpeed);
-
   SmState = DONE;
 }
 
@@ -143,41 +143,51 @@ void Sm_Moving(void)
     {
       EncoderPos++;
     }
-    Serial.print("Current length: ");
-    Serial.print(EncoderPos);
-    Serial.print(" Desired length: ");
-    Serial.println(desiredPos);
   }
   EncoderLast = EncoderCurrent;
 
-  if (currentSpeed < desiredSpeed && acceleration > 500)
-  {
-    currentSpeed++;
-    acceleration = 0;
-  }
-  else
-  {
-    acceleration++;
-  }
+  // Motor
+  // decide direction
   if (desiredPos > EncoderPos)
   {
-    digitalWrite(retractPin, false);
-    digitalWrite(feedPin, true);
-    analogWrite(motorDriverPwmPin, currentSpeed);
-  }
-  else if (desiredPos < EncoderPos)
-  {
-    digitalWrite(retractPin, true);
-    digitalWrite(feedPin, false);
-    analogWrite(motorDriverPwmPin, currentSpeed);
+    direction = false;
   }
   else
   {
+    direction = true;
+  }
+  // Speed
+  if (acceleration > 10)
+  {
+    //breakingzone
+    if (((EncoderPos > desiredPos - 20 && !direction )|| (EncoderPos < desiredPos + 20 && direction)) && currentSpeed > 30)
+    {
+      currentSpeed--;
+    }
+    else if (currentSpeed < desiredSpeed)
+    {
+      currentSpeed++;
+    }
+    acceleration = 0;
+  }
+  acceleration++;
+
+  if (desiredPos == EncoderPos)
+  {
     currentSpeed = 0;
-    analogWrite(motorDriverPwmPin, currentSpeed);
     Serial.println("Correct position");
     SmState = DONE;
   }
+  digitalWrite(retractPin, direction);
+  digitalWrite(feedPin, !direction);
+  analogWrite(motorDriverPwmPin, currentSpeed);
+
+  Serial.print("Current length: ");
+  Serial.print(EncoderPos);
+  Serial.print(" Desired length: ");
+  Serial.print(desiredPos);
+  Serial.print(" Speed: ");
+  Serial.println(currentSpeed);
 }
 
 void Sm_Done(void)
