@@ -45,9 +45,6 @@ int EncoderPinA = 7;
 int EncoderPinB = 8;
 
 // Global variables
-int EncoderLast = LOW;
-int EncoderCurrent = LOW;
-
 int EncoderPos = 0;
 int desiredPos = 0;
 
@@ -58,6 +55,8 @@ bool direction;
 int acceleration = 0;
 
 String Command = "0";
+
+void interruptEncoder();
 
 void setup()
 {
@@ -71,6 +70,10 @@ void setup()
   // encoder setup
   pinMode(EncoderPinA, INPUT);
   pinMode(EncoderPinB, INPUT);
+  
+  //interrupt setup:
+  attachInterrupt(digitalPinToInterrupt(EncoderPinA), interruptEncoder,RISING);
+
   Serial.begin(9600);
 }
 
@@ -85,6 +88,21 @@ void loop()
   }
 }
 
+//interrupt functions:
+void interruptEncoder()
+{
+    if (digitalRead(EncoderPinB) == LOW)
+        EncoderPos--;
+    else
+        EncoderPos++;
+    Serial.print("Current length: ");
+    Serial.print(EncoderPos);
+    Serial.print(" Desired length: ");
+    Serial.println(desiredPos);
+}
+
+
+//state functions:
 void Sm_Listening(void)
 {
   while (Serial.available())
@@ -132,30 +150,15 @@ void Sm_SettingLength(void)
 void Sm_Moving(void)
 {
   // Move rope to desired length
-  EncoderCurrent = digitalRead(EncoderPinA);
-  if ((EncoderLast == LOW) && (EncoderCurrent == HIGH))
-  {
-    if (digitalRead(EncoderPinB) == LOW)
-    {
-      EncoderPos--;
-    }
-    else
-    {
-      EncoderPos++;
-    }
-  }
-  EncoderLast = EncoderCurrent;
+  if (currentSpeed < desiredSpeed && acceleration > 500)
 
-  // Motor
-  // decide direction
-  if (desiredPos > EncoderPos)
-  {
     direction = false;
   }
   else
   {
     direction = true;
   }
+  
   // Speed
   if (acceleration > 10)
   {
