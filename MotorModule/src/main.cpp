@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #define PI 3.1415926535897932384626433832795
-#define ENCODER_DIAMETER 32
+#define ENCODER_DIAMETER 32.75
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
 
@@ -50,8 +50,8 @@ int EncoderPinA = 7;
 int EncoderPinB = 8;
 
 // Global variables
-double EncoderPos = 0;
-double desiredPos = 0;
+int EncoderPos = 0;
+int desiredPos = 0;
 
 int desiredSpeed = 0;
 int currentSpeed = 0;
@@ -97,15 +97,15 @@ void loop()
 void interruptEncoder()
 {
   if (digitalRead(EncoderPinB) == LOW)
-    EncoderPos -= MMPERTICK;
+    EncoderPos--;
   else
-    EncoderPos += MMPERTICK;
-  Serial.print("Current length: ");
-  Serial.print(EncoderPos);
-  Serial.print(" Desired length: ");
-  Serial.print(desiredPos);
-  Serial.print(" Current speed: ");
-  Serial.println(currentSpeed);
+    EncoderPos++;
+  // Serial.print("Current length: ");
+  // Serial.print(EncoderPos);
+  // Serial.print(" Desired length: ");
+  // Serial.print(desiredPos);
+  // Serial.print(" Current speed: ");
+  // Serial.println(currentSpeed);
 }
 
 //state functions:
@@ -128,6 +128,20 @@ void Sm_Listening(void)
       SmState = MOVING;
       Serial.println("Switched to moving state");
       break;
+    case 4:
+      EncoderPos = 0;
+      desiredPos = 0;
+      Command = "";
+      break;
+    case 5:
+      Serial.print("Current length: ");
+      Serial.print(EncoderPos);
+      Serial.print(" Length in mm: ");
+      Serial.print(EncoderPos * ((ENCODER_DIAMETER * PI) / TICKS));
+      Serial.print(" Ticks: ");
+      Serial.println(desiredPos);
+      Command = "";
+      break;
     default:
       Serial.print("Received unknown command: ");
       Serial.println(Command);
@@ -142,16 +156,20 @@ void Sm_SettingLength(void)
   // Set correct length
   int length = Command.substring(Command.indexOf('|', 3) + 1, Command.indexOf('|', 4)).toInt();
   int speed = Command.substring(Command.indexOf('|', 4) + 1, Command.length()).toInt();
-  desiredPos = length;
+  desiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
   desiredSpeed = speed;
+  Serial.println("--------------------------------------------------");
   Serial.print("Current length: ");
   Serial.print(EncoderPos);
-  Serial.print(" Desired length: ");
+  Serial.print(" Ticks: ");
   Serial.print(desiredPos);
-  Serial.print(" Speed: ");
-  Serial.println(currentSpeed);
+  Serial.print(" Desired length in mm: ");
+  Serial.print(length);
+  Serial.print(" Desired speed: ");
+  Serial.println(desiredSpeed);
   SmState = DONE;
 }
+
 /*
 * 
 *
@@ -168,7 +186,7 @@ void Sm_Moving(void)
   if (acceleration > 10)
   {
     // Breakingzone
-    if (((EncoderPos > desiredPos - 50 && !direction) || (EncoderPos < desiredPos + 50 && direction)) && currentSpeed > 30)
+    if (((EncoderPos > desiredPos - 50 && !direction) || (EncoderPos < desiredPos + 50 && direction)) && currentSpeed > 20)
     {
       currentSpeed--;
     }
@@ -182,14 +200,15 @@ void Sm_Moving(void)
   }
   acceleration++;
 
-  if ((EncoderPos < (desiredPos + MMPERTICK)) && (EncoderPos > (desiredPos - MMPERTICK)))
+  if (EncoderPos == desiredPos)
   {
     currentSpeed = 0;
-    Serial.println("Correct position");
-    Serial.print("Desired position: ");
-    Serial.println(desiredPos);
-    Serial.print("Current position: ");
-    Serial.println(EncoderPos);
+    Serial.print("Current length: ");
+    Serial.print(EncoderPos);
+    Serial.print(" Desired length: ");
+    Serial.print(desiredPos);
+    Serial.print(" Current speed: ");
+    Serial.println(currentSpeed);
     SmState = DONE;
   }
   digitalWrite(retractPin, direction);
