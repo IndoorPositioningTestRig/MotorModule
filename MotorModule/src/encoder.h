@@ -1,6 +1,7 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 #include "Arduino.h"
+#include "main.h"
 
 #define PI 3.1415926535897932384626433832795
 //te ver => diameter groter
@@ -22,10 +23,12 @@ extern int currentSpeed;
 extern bool direction;
 extern int acceleration;
 
-void setupEncoder();
+int setupEncoder();
 
 ///Sets the wanted encoder length and speed,
 ///Lenght in mm and speed in mm / s
-void setEncoderData(int length, int speed);
+int setEncoderData(int length, int speed);
+
+int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done);
 
 #endif

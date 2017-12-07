@@ -110,65 +110,30 @@ void Sm_SettingLength(void)
   // Set correct length
   int length = Command.substring(Command.indexOf('|', 3) + 1, Command.indexOf('|', 4)).toInt();
   int speed = Command.substring(Command.indexOf('|', 4) + 1, Command.length()).toInt();
-
   setEncoderData(length, speed);
-
-  Serial.println("--------------------------------------------------");
-  Serial.print("Current length: ");
-  Serial.print(EncoderPos);
-  Serial.print(" Ticks: ");
-  Serial.print(desiredPos);
-  Serial.print(" Desired length in mm: ");
-  Serial.print(length);
-  Serial.print(" Desired speed: ");
-  Serial.println(desiredSpeed);
   SmState = DONE;
 }
 
 /*
 * 
-*
 */
 void Sm_Moving(void)
 {
-  // Move rope to desired length
-  if (desiredPos > EncoderPos)
-    direction = false;
-  else
-    direction = true;
-
-  // Speed
-  if (acceleration > 10)
+  bool retractDirection, done;
+  int newSpeed;
+  calculateMotorSpeed(retractDirection,newSpeed,done);
+  if (done)
   {
-    // Breakingzone
-    if (((EncoderPos > desiredPos - 50 && !direction) || (EncoderPos < desiredPos + 50 && direction)) && currentSpeed > 20)
-    {
-      currentSpeed--;
-    }
-    // Accelerate
-    else if (currentSpeed < desiredSpeed)
-    {
-      currentSpeed = desiredSpeed;
-      //currentSpeed++;
-    }
-    acceleration = 0;
+      currentSpeed = 0;
+      Serial.print("Current length: ");
+      Serial.print(EncoderPos);
+      Serial.print(" Desired length: ");
+      Serial.print(desiredPos);
+      Serial.print(" Current speed: ");
+      Serial.println(currentSpeed);
+      SmState = DONE;
   }
-  acceleration++;
-
-  if (EncoderPos == desiredPos)
-  {
-    currentSpeed = 0;
-    Serial.print("Current length: ");
-    Serial.print(EncoderPos);
-    Serial.print(" Desired length: ");
-    Serial.print(desiredPos);
-    Serial.print(" Current speed: ");
-    Serial.println(currentSpeed);
-    SmState = DONE;
-  }
-  digitalWrite(retractPin, direction);
-  digitalWrite(feedPin, !direction);
-  analogWrite(motorDriverPwmPin, currentSpeed);
+  setMotor(direction,currentSpeed);
 }
 
 /*
