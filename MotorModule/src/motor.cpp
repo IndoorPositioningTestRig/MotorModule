@@ -1,5 +1,10 @@
 #include "motor.h"
 
+// Motor driver
+#define retractPin 2
+#define motorDriverPwmPin 3
+#define feedPin 4
+
 int setupMotor(){
     Serial.println("setting up motor");
     // Motor driver setup
@@ -13,10 +18,8 @@ int setMotor(bool retract, int speed){
     if(speed < 0 || speed > 255)
         return STATUS_ERROR;
 
-    direction = retract;
-    currentSpeed = speed;
-    digitalWrite(retractPin, direction);
-    digitalWrite(feedPin, !direction);
-    analogWrite(motorDriverPwmPin, currentSpeed);
+    digitalWrite(retractPin, retract);
+    digitalWrite(feedPin, !retract);
+    analogWrite(motorDriverPwmPin, speed);
     return STATUS_OK; 
 }

@@ -83,17 +83,18 @@ void Sm_Listening(void)
       Serial.println("Switched to moving state");
       break;
     case 3:
-      EncoderPos = 0;
-      desiredPos = 0;
+      resetEncoderData();
       Command = "";
       break;
     case 4:
+      int ePos, dPos;
+      getEncoderData(ePos, dPos);
       Serial.print("Current length: ");
-      Serial.print(EncoderPos);
+      Serial.print(ePos);
       Serial.print(" Length in mm: ");
-      Serial.print(EncoderPos * ((ENCODER_DIAMETER * PI) / TICKS));
+      Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
       Serial.print(" Ticks: ");
-      Serial.println(desiredPos);
+      Serial.println(dPos);
       Command = "";
       break;
     default:
@@ -124,16 +125,9 @@ void Sm_Moving(void)
   calculateMotorSpeed(retractDirection,newSpeed,done);
   if (done)
   {
-      currentSpeed = 0;
-      Serial.print("Current length: ");
-      Serial.print(EncoderPos);
-      Serial.print(" Desired length: ");
-      Serial.print(desiredPos);
-      Serial.print(" Current speed: ");
-      Serial.println(currentSpeed);
       SmState = DONE;
   }
-  setMotor(direction,currentSpeed);
+  setMotor(retractDirection,newSpeed);
 }
 
 /*
