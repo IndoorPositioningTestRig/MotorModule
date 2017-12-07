@@ -1,8 +1,5 @@
-#include "Arduino.h"
-#define PI 3.1415926535897932384626433832795
-#define ENCODER_DIAMETER 32.75
-#define TICKS 128
-#define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
+#include "main.h"
+
 
 /*
 * State machine declaration
@@ -37,47 +34,19 @@ StateType SmState = LISTENING;
 /*
 * GPIO declaration
 */
-// Motor driver
-int retractPin = 2;
-int motorDriverPwmPin = 3;
-int feedPin = 4;
 
 // End switches
 int switchAPin = 5;
 int switchBPin = 6;
-// Encoder
-int EncoderPinA = 7;
-int EncoderPinB = 8;
-
-// Global variables
-int EncoderPos = 0;
-int desiredPos = 0;
-
-int desiredSpeed = 0;
-int currentSpeed = 0;
-
-bool direction;
-int acceleration = 0;
 
 String Command = "0";
 
-void interruptEncoder();
 
 void setup()
 {
-  // Motor driver setup
-  pinMode(retractPin, OUTPUT);
-  pinMode(motorDriverPwmPin, OUTPUT);
-  pinMode(feedPin, OUTPUT);
-
+  setupMotor();
+  setupEncoder();
   // TODO Switch setup
-
-  // encoder setup
-  pinMode(EncoderPinA, INPUT);
-  pinMode(EncoderPinB, INPUT);
-
-  //interrupt setup:
-  attachInterrupt(digitalPinToInterrupt(EncoderPinA), interruptEncoder, RISING);
 
   Serial.begin(9600);
 }
@@ -91,21 +60,6 @@ void loop()
   else
   {
   }
-}
-
-//interrupt functions:
-void interruptEncoder()
-{
-  if (digitalRead(EncoderPinB) == LOW)
-    EncoderPos--;
-  else
-    EncoderPos++;
-  // Serial.print("Current length: ");
-  // Serial.print(EncoderPos);
-  // Serial.print(" Desired length: ");
-  // Serial.print(desiredPos);
-  // Serial.print(" Current speed: ");
-  // Serial.println(currentSpeed);
 }
 
 //state functions:
@@ -128,12 +82,12 @@ void Sm_Listening(void)
       SmState = MOVING;
       Serial.println("Switched to moving state");
       break;
-    case 4:
+    case 3:
       EncoderPos = 0;
       desiredPos = 0;
       Command = "";
       break;
-    case 5:
+    case 4:
       Serial.print("Current length: ");
       Serial.print(EncoderPos);
       Serial.print(" Length in mm: ");
@@ -156,8 +110,9 @@ void Sm_SettingLength(void)
   // Set correct length
   int length = Command.substring(Command.indexOf('|', 3) + 1, Command.indexOf('|', 4)).toInt();
   int speed = Command.substring(Command.indexOf('|', 4) + 1, Command.length()).toInt();
-  desiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
-  desiredSpeed = speed;
+
+  setEncoderData(length, speed);
+
   Serial.println("--------------------------------------------------");
   Serial.print("Current length: ");
   Serial.print(EncoderPos);
