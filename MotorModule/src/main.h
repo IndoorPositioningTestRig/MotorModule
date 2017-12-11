@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "encoder.h"
+#include "endswitch.h"
 #include "motor.h"
 
 //Global constants

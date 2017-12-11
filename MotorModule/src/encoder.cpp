@@ -5,8 +5,8 @@
 #define EncoderPinB 8
 
 // Local variables
-int EncoderPos = 0;
-int DesiredPos = 0;
+int encoderPos = 0;
+int desiredPos = 0;
 
 int desiredSpeed = 0;
 int currentSpeed = 0;
@@ -34,26 +34,26 @@ int setupEncoder(){
 }
 
 int setEncoderData(int length, int speed ){
-    DesiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
+    desiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
     desiredSpeed = speed;
     return STATUS_OK;
 }
 
 int resetEncoderData(){
-    DesiredPos = 0;
+    desiredPos = 0;
     desiredSpeed = 0;
     return STATUS_OK;
 }
 
 int getEncoderData(int & encoderPosition, int & desiredPosition){
-    encoderPosition = EncoderPos;
-    desiredPosition = DesiredPos;
+    encoderPosition = encoderPos;
+    desiredPosition = desiredPos;
     return STATUS_OK;
 }
 
 int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
     //first check if position is reached
-    if(EncoderPos == DesiredPos){
+    if(encoderPos == desiredPos){
         done = 1;
         currentSpeed = speed = 0;
         retractDirection = false;
@@ -63,7 +63,7 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
     int currentSpeed =  calculateCurrentSpeed();
     
     // Move rope to desired length
-    if (DesiredPos > EncoderPos)
+    if (desiredPos > encoderPos)
         retractDirection = false;
     else
         retractDirection = true;
@@ -72,7 +72,7 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
     if (acceleration > 10)
     {
         // Breakingzone
-        if (((EncoderPos > DesiredPos - 50 && !direction) || (EncoderPos < DesiredPos + 50 && direction)) && currentSpeed > 20)
+        if (((encoderPos > desiredPos - 50 && !direction) || (encoderPos < desiredPos + 50 && direction)) && currentSpeed > 20)
         {
         currentSpeed--;
         }
@@ -89,9 +89,9 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
     speed = currentSpeed;
     if(done){
         Serial.print("Current length: ");
-        Serial.print(EncoderPos);
+        Serial.print(encoderPos);
         Serial.print(" Desired length: ");
-        Serial.print(DesiredPos);
+        Serial.print(desiredPos);
         Serial.print(" Current speed: ");
         Serial.println(currentSpeed);
     }
@@ -102,20 +102,19 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
 void interruptEncoder()
 {
     if (digitalRead(EncoderPinB) == LOW)
-        EncoderPos--;
+        encoderPos--;
     else
-        EncoderPos++;
+        encoderPos++;
 }
 
-//PRIVATE FUNCTIONS:
 int calculateCurrentSpeed(){
     latestTime = millis();
     unsigned long timeDifference = latestTime - previousTime;
-    int tickDifference = EncoderPos - previousPos;
+    int tickDifference = encoderPos - previousPos;
     float mmDifference = tickDifference * MMPERTICK;
     float mmPerMSecond = mmDifference / timeDifference;
     int mmPSec = mmPerMSecond * 1000;
-    previousPos = EncoderPos;
+    previousPos = encoderPos;
     previousTime = latestTime;
     return mmPSec;
 }

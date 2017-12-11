@@ -46,13 +46,19 @@ void setup()
 {
   setupMotor();
   setupEncoder();
-  // TODO Switch setup
+  setupSwitches();
 
   Serial.begin(9600);
 }
 
 void loop()
 {
+  if(isSwitchPressed())
+  {
+    //ONE endswitch is pressed!
+    //TODO: handle this problem
+  }
+
   if (SmState < 4)
   {
     (*StateMachine[SmState].func)();
