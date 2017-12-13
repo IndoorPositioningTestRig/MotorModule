@@ -47,12 +47,21 @@ num_func stateFunctions[] = {
     stopBraking,
 };
 
+//public functions
 int setValues(int startPos, int desiredPos, int desiredSpeed)
 {
+    //check for invalid parameters
+    if((desiredPos <= startPos) || (desiredSpeed <= 0))
+        return STATUS_ERROR;
+    
     startPosition = startPos;
     desiredPosition = desiredPos;
     desiredMaxSpeed = desiredSpeed;
     positionToMove = desiredPos - startPos;
+    if(positionToMove <=50){
+        toState2Pos = positionToMove /2;
+        toState7Pos = positionToMove /2; 
+    }
 
     return STATUS_OK;
 }
