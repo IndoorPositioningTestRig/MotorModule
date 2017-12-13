@@ -31,13 +31,6 @@ StateMachineType StateMachine[] = {
 
 StateType SmState = LISTENING;
 
-/*
-* GPIO declaration
-*/
-
-// End switches
-int switchAPin = 5;
-int switchBPin = 6;
 
 String Command = "0";
 

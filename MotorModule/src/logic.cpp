@@ -127,37 +127,48 @@ int getState(int currentDeltaPos, int currentSpeed)
 
 int startAccelerating(int currentDeltaPos, int & currentSpeed)
 {
+    //speed = pos^2 /9
+    //25 = 15^2 / 9 << accelerating 3 mm/s^2
+
+    currentSpeed = (currentDeltaPos * currentDeltaPos) / 9;
 
     return STATUS_OK;
 }
 
 int accelerate(int currentDeltaPos, int & currentSpeed)
 {
+    currentSpeed += 3;
+
     return STATUS_OK;
 }
 
 int stopAccelerating(int currentDeltaPos, int & currentSpeed)
 {
+    //sqrt 
     return STATUS_OK;
 }
 
 int move(int currentDeltaPos, int & currentSpeed)
 {
+    currentSpeed = currentSpeed;
     return STATUS_OK;
 }
 
 int startBraking(int currentDeltaPos, int & currentSpeed)
 {
+    //-pos^2
     return STATUS_OK;
 }
 
 int brake(int currentDeltaPos, int & currentSpeed)
 {
+    currentSpeed -= 3;
     return STATUS_OK;
 }
 
 int stopBraking(int currentDeltaPos, int & currentSpeed)
 {
+    //-sqrt 
     return STATUS_OK;
 }
 
