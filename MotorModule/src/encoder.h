@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "main.h"
+#include "logic.h"
 
 #define PI 3.1415926535897932384626433832795
 

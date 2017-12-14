@@ -7,10 +7,13 @@
 // Local variables
 int encoderPos = 0;
 int desiredPos = 0;
+int positionsToMove = 0;
 
 int desiredSpeed = 0;
 int currentSpeed = 0;
 
+//true == feed some rope
+//false == eat some rope
 bool direction;
 int acceleration = 0;
 
@@ -34,14 +37,24 @@ int setupEncoder(){
 }
 
 int setEncoderData(int length, int speed ){
+    //position in mm 
     desiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
+    //speed in mm/s
     desiredSpeed = speed;
+    direction = encoderPos < desiredPos;
+    if(direction){
+        positionsToMove = desiredPos - encoderPos;
+    }else{
+        positionsToMove = encoderPos = desiredPos;
+    }
+    setLogicValues(encoderPos,positionsToMove,desiredSpeed);
     return STATUS_OK;
 }
 
 int resetEncoderData(){
     desiredPos = 0;
     desiredSpeed = 0;
+    resetLogicValues();
     return STATUS_OK;
 }
 
@@ -57,11 +70,11 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
         done = 1;
         currentSpeed = speed = 0;
         retractDirection = false;
+        return STATUS_OK;
     }else 
         done = 0;
 
     int currentSpeed =  calculateCurrentSpeed();
-    
     // Move rope to desired length
     if (desiredPos > encoderPos)
         retractDirection = false;
@@ -102,9 +115,9 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
 void interruptEncoder()
 {
     if (digitalRead(EncoderPinB) == LOW)
-        encoderPos--;
+        encoderPos --;
     else
-        encoderPos++;
+        encoderPos --;
 }
 
 int calculateCurrentSpeed(){

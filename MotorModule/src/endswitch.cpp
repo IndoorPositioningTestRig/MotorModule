@@ -1,7 +1,7 @@
 #include "endswitch.h"
 
-#define SwitchCheckMaxForcePin 5
-#define SwitchCheckMinForcePin 6
+#define SwitchCheckMaxForcePin 10
+#define SwitchCheckMinForcePin 11
 
 bool checkMaxForceSwitchPressed;
 bool checkMinForceSwitchPressed;
