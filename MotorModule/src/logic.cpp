@@ -1,22 +1,10 @@
 #include "logic.h"
 
 //private states
-#define STARTAC_STATE       0
-#define ACCELERATE_STATE    1
-#define STOPAC_STATE        2
-#define MOVE_STATE          3
-#define STARTBR_STATE       4
-#define BRAKE_STATE         5
-#define STOPBR_STATE        6
-
-// constants
-int toState2Pos = 25;
-int toState3Speed = -1;
-int toState4Speed = -1;
-int toState5Pos = -1;
-int toState6Speed = -1;
-int toState7Pos = -1;
-
+#define ACCELERATE_STATE    0
+#define MOVE_STATE          1
+#define BRAKE_STATE         2
+#define PI 3.1415926535897932384626433832795
 
 //private fields
 int startPosition = 0;
@@ -28,23 +16,15 @@ int positionToMove = 0;
 //private functions
 int getState(int currentDeltaPos, int currentSpeed);
 
-int startAccelerating(int currentDeltaPos, int & currentSpeed);
 int accelerate(int currentDeltaPos, int & currentSpeed);
-int stopAccelerating(int currentDeltaPos, int & currentSpeed);
 int move(int currentDeltaPos, int & currentSpeed);
-int startBraking(int currentDeltaPos, int & currentSpeed);
 int brake(int currentDeltaPos, int & currentSpeed);
-int stopBraking(int currentDeltaPos, int & currentSpeed);
 
 typedef int (*num_func)(int currentDeltaPos, int & currentSpeed);
 num_func stateFunctions[] = {
-    startAccelerating,
     accelerate,
-    stopAccelerating,
     move,
-    startBraking,
     brake,
-    stopBraking,
 };
 
 //public functions
@@ -58,11 +38,6 @@ int setValues(int startPos, int desiredPos, int desiredSpeed)
     desiredPosition = desiredPos;
     desiredMaxSpeed = desiredSpeed;
     positionToMove = desiredPos - startPos;
-    if(positionToMove <=50){
-        toState2Pos = positionToMove /2;
-        toState7Pos = positionToMove /2; 
-    }
-
     return STATUS_OK;
 }
 
@@ -78,46 +53,28 @@ int calculateSpeed(int currentPos, int currentSpeed, bool & direction, int & spe
 //PRIVATE functions
 
 //PRIVATE fields
+int posToAccelerate = 0;
 
 int getState(int currentDeltaPos, int currentSpeed)
 {
     //Check if is accelerating
     if(currentDeltaPos < positionToMove /2){
-        //if position < startaccelerating position
-        if(currentDeltaPos < toState2Pos){
-            return STARTAC_STATE;
-        }
-        //if speed < stopaccelerating speed
-        else if(currentSpeed < desiredMaxSpeed - toState3Speed){
+        //if desiredspeed is not reached:
+        if(currentSpeed < desiredMaxSpeed){
             return ACCELERATE_STATE;
-        }
-        //if desiredspeed is almost reached:
-        else if(currentSpeed < desiredMaxSpeed){
-            return STOPAC_STATE;
         }
         //correct speed is set
         else {
             return MOVE_STATE;
         }       
-    }else {
+    }else{
         //half of the work is done now check if it is time for a brake
 
         //still possible to move at desired speed:
-        if(currentDeltaPos < toState5Pos ){
+        if(currentDeltaPos < desiredPosition - posToAccelerate){
             return MOVE_STATE;
         }else{
-            //at desired speed, need to start braking
-            if(currentSpeed > toState6Speed){
-                return STARTBR_STATE;
-            }
-            //if position for braking the braking is not reached
-            else if(currentDeltaPos < toState7Pos){
-                return BRAKE_STATE;
-            }
-            //slowly stop braking
-            else if(currentDeltaPos < positionToMove){
-                return STOPBR_STATE;
-            }
+            return BRAKE_STATE;
         }
     }
     return -1;
@@ -125,26 +82,19 @@ int getState(int currentDeltaPos, int currentSpeed)
 
 //state functions
 
-int startAccelerating(int currentDeltaPos, int & currentSpeed)
-{
-    //speed = pos^2 /9
-    //25 = 15^2 / 9 << accelerating 3 mm/s^2
-
-    currentSpeed = (currentDeltaPos * currentDeltaPos) / 9;
-
-    return STATUS_OK;
-}
-
 int accelerate(int currentDeltaPos, int & currentSpeed)
 {
+    // speed = (desirespeed * 0.5) * sin((1 / desiredspeed * currentDeltaPos) - 0.5pi) + 1
+    // desiredspeed * 0.5                >> sets correct amplitude
+    // 1/desiredspeed * currentdeltaPos  >> sets correct sinus length
+    // -0.5pi                            >> translates the sinus to the right
+    // +1                                >> makes the sinus always positive and starting at (0,0)
+
+    currentSpeed = (desiredMaxSpeed * 0.5) * sin((1/desiredMaxSpeed * currentDeltaPos)-0.5 * PI) +1;
+
+    posToAccelerate = currentDeltaPos;
     currentSpeed += 3;
 
-    return STATUS_OK;
-}
-
-int stopAccelerating(int currentDeltaPos, int & currentSpeed)
-{
-    //sqrt 
     return STATUS_OK;
 }
 
@@ -154,21 +104,14 @@ int move(int currentDeltaPos, int & currentSpeed)
     return STATUS_OK;
 }
 
-int startBraking(int currentDeltaPos, int & currentSpeed)
-{
-    //-pos^2
-    return STATUS_OK;
-}
-
 int brake(int currentDeltaPos, int & currentSpeed)
 {
+    // speed = desiredspeed * 0.5 * (sin(1 / desiredspeed * currentpos +0.5*π) + 1)
+    // desiredspeed * 0.5                >> sets correct amplitude
+    // 1/desiredspeed * currentdeltaPos  >> sets correct sinus length
+    // +0.5pi                            >> translates the sinus to the left
+    // +1                                >> makes the sinus always positive and starting at (0,0)
     currentSpeed -= 3;
-    return STATUS_OK;
-}
-
-int stopBraking(int currentDeltaPos, int & currentSpeed)
-{
-    //-sqrt 
     return STATUS_OK;
 }
 
