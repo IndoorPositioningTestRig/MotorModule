@@ -32,7 +32,7 @@ int main() {
 
 			cout << "pos:   " << i << " \tnewspeed: " << roundf(newSpeed * 100)/100 << "   \tdelta acceleration: " << roundf((newSpeed - speed)*100)/100 << endl;
 			speed = newSpeed;
-			//Sleep(100);
+			//Sleep(1000);
 		}
 	}
 	else {
@@ -41,7 +41,7 @@ int main() {
 			calculateSpeed(i, newSpeed);
 			cout << "pos:   " << i << " \tnewspeed: " << roundf(newSpeed * 100)/100 << "   \tacceleration: " << roundf((newSpeed - speed)*100)/100 << endl;
 			speed = newSpeed;
-			//Sleep(100);
+			//Sleep(1000);
 		}
 	}
 
