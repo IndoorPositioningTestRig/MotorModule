@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logictest", "Logictest\Logictest.vcxproj", "{7084D43C-DFF3-40D3-858A-B85817E63B81}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Motor Logic Test", "Motor Logic Test\Motor Logic Test.vcxproj", "{216DF989-7B6E-478A-AA41-2374FCD3B201}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Debug|x64.ActiveCfg = Debug|x64
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Debug|x64.Build.0 = Debug|x64
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Debug|x86.ActiveCfg = Debug|Win32
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Debug|x86.Build.0 = Debug|Win32
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Release|x64.ActiveCfg = Release|x64
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Release|x64.Build.0 = Release|x64
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Release|x86.ActiveCfg = Release|Win32
-		{7084D43C-DFF3-40D3-858A-B85817E63B81}.Release|x86.Build.0 = Release|Win32
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Debug|x64.ActiveCfg = Debug|x64
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Debug|x64.Build.0 = Debug|x64
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Debug|x86.ActiveCfg = Debug|Win32
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Debug|x86.Build.0 = Debug|Win32
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Release|x64.ActiveCfg = Release|x64
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Release|x64.Build.0 = Release|x64
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Release|x86.ActiveCfg = Release|Win32
+		{216DF989-7B6E-478A-AA41-2374FCD3B201}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

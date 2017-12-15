@@ -1,7 +1,6 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
-#include "Arduino.h"
 #include "main.h"
 #include <math.h>
 
@@ -12,8 +11,7 @@ int setLogicValues(int startPos, int positionsToMove, int desiredSpeed);
 
 int resetLogicValues();
 
-int calculateSpeed(int currentPos, int & speed);
-
+int calculateSpeed(int currentPos,  double & speed);
 
 
 #endif

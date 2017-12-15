@@ -14,5 +14,4 @@ int resetLogicValues();
 int calculateSpeed(int currentPos, bool direction, int & speed);
 
 
-
 #endif
