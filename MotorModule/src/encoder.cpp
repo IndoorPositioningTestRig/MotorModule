@@ -5,26 +5,30 @@
 #define EncoderPinB 8
 
 // Local variables
-int encoderPos = 0;
-int desiredPos = 0;
-int positionsToMove = 0;
+int encoderPosTicks = 0;
+int desiredPosTicks = 0;
 
-int desiredSpeed = 0;
-int currentSpeed = 0;
+int desiredSpeedTicks = 0;
+int currentSpeedTicks = 0;
+
+//variables for speed:
+unsigned long previousTime = 0;
+unsigned long latestTime = 0;
+int previousPos = 0;
 
 //true == feed some rope
 //false == eat some rope
 bool direction;
-int acceleration = 0;
-
-unsigned long previousTime = 0;
-unsigned long latestTime = 0;
-int previousPos = 0;
-int speed = 0;
 
 //PRIVATE FUNCTIONS
 void interruptEncoder();
-int calculateCurrentSpeed();
+double calculateCurrentSpeed();
+
+//test function delete this when testing some real stuff
+void addEncoderPos()
+{
+    encoderPosTicks ++;
+}
 
 int setupEncoder(){
     Serial.println("setting up encoder");
@@ -36,78 +40,81 @@ int setupEncoder(){
     return STATUS_OK;
 }
 
-int setEncoderData(int length, int speed ){
+int setEncoderData(int lengthmm, int speedmms ){
     //position in mm 
-    desiredPos = round(length / ((ENCODER_DIAMETER * PI) / TICKS));
-    //speed in mm/s
-    desiredSpeed = speed;
-    direction = encoderPos < desiredPos;
-    if(direction){
-        positionsToMove = desiredPos - encoderPos;
+    double mmpertick = MMPERTICK;
+    double test = lengthmm / mmpertick;
+    desiredPosTicks = (double)lengthmm / mmpertick;
+    desiredSpeedTicks = (double)speedmms / (double)mmpertick;
+    int ticksToMove = desiredPosTicks - encoderPosTicks;
+    if(ticksToMove < 0) {
+        ticksToMove = ticksToMove * -1;
+        direction = false;
     }else{
-        positionsToMove = encoderPos = desiredPos;
+        direction = true;
     }
-    setLogicValues(encoderPos,positionsToMove,desiredSpeed);
+    setLogicValues(encoderPosTicks,ticksToMove,desiredSpeedTicks);
     return STATUS_OK;
 }
 
-int resetEncoderData(){
-    desiredPos = 0;
-    desiredSpeed = 0;
+int resetEncoderData()
+{
+    desiredPosTicks = currentSpeedTicks = encoderPosTicks = 0;
     resetLogicValues();
     return STATUS_OK;
 }
 
-int getEncoderData(int & encoderPosition, int & desiredPosition){
-    encoderPosition = encoderPos;
-    desiredPosition = desiredPos;
+int getEncoderData(int & encoderPosition, int & desiredPosition)
+{
+    encoderPosition = encoderPosTicks;
+    desiredPosition = desiredPosTicks;
     return STATUS_OK;
 }
 
-int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
+int setCurrentPosition(int locationmm)
+{
+    encoderPosTicks = locationmm / MMPERTICK;
+    return STATUS_OK;
+}   
+
+int calculateMotorSpeed(bool & retractDirection, int & speedPWM, bool & done)
+{
+    // Serial.print("encoderpos: ");
+    // Serial.print(encoderPosTicks);
+    // Serial.print(" desired :");
+    // Serial.println(desiredPosTicks);
     //first check if position is reached
-    if(encoderPos == desiredPos){
+    if((encoderPosTicks == desiredPosTicks)||((encoderPosTicks > desiredPosTicks) && direction) || ((encoderPosTicks < desiredPosTicks )&& !direction)){
         done = 1;
-        currentSpeed = speed = 0;
+        currentSpeedTicks = speedPWM = 0;
         retractDirection = false;
         return STATUS_OK;
     }else 
         done = 0;
 
-    int currentSpeed =  calculateCurrentSpeed();
-    // Move rope to desired length
-    if (desiredPos > encoderPos)
-        retractDirection = false;
-    else
-        retractDirection = true;
+    //get current speed
+    double currentSpeedTicks = calculateCurrentSpeed();
 
-    // Speed
-    if (acceleration > 10)
-    {
-        // Breakingzone
-        if (((encoderPos > desiredPos - 50 && !direction) || (encoderPos < desiredPos + 50 && direction)) && currentSpeed > 20)
-        {
-        currentSpeed--;
-        }
-        // Accelerate
-        else if (currentSpeed < desiredSpeed)
-        {
-        currentSpeed = desiredSpeed;
-        //currentSpeed++;
-        }
-        acceleration = 0;
-    }
-    acceleration++;
-
-    speed = currentSpeed;
-    if(done){
-        Serial.print("Current length: ");
-        Serial.print(encoderPos);
-        Serial.print(" Desired length: ");
-        Serial.print(desiredPos);
-        Serial.print(" Current speed: ");
-        Serial.println(currentSpeed);
-    }
+    
+    //get desiredcurrent speed:
+    double currentDesiredSpeed = currentSpeedTicks;
+    calculateSpeed(encoderPosTicks,currentDesiredSpeed);
+    // Serial.print("currentSpeed");
+    // Serial.print(currentSpeedTicks);
+    // Serial.print(" desiredSpeed: ");
+    // Serial.println(currentDesiredSpeed);
+    
+    //check if speed is hard enough
+    //if going to hard
+    if(currentDesiredSpeed < currentSpeedTicks)
+        //Going to hard
+        speedPWM -= 1;
+    //if going to slow
+    else if(currentDesiredSpeed > currentSpeedTicks)
+        //Go harder
+        speedPWM += 1;
+    //set speed in correct directio
+    retractDirection = direction;   
     return STATUS_OK;
 }
 
@@ -115,21 +122,21 @@ int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done){
 void interruptEncoder()
 {
     if (digitalRead(EncoderPinB) == LOW)
-        encoderPos --;
+        encoderPosTicks --;
     else
-        encoderPos --;
+        encoderPosTicks ++;
 }
 
-int calculateCurrentSpeed(){
+//calculates current speed in ticks per second
+double calculateCurrentSpeed(){
     latestTime = millis();
     unsigned long timeDifference = latestTime - previousTime;
-    int tickDifference = encoderPos - previousPos;
-    float mmDifference = tickDifference * MMPERTICK;
-    float mmPerMSecond = mmDifference / timeDifference;
-    int mmPSec = mmPerMSecond * 1000;
-    previousPos = encoderPos;
+    int tickDifference = encoderPosTicks - previousPos;
+    double ticksPerMicroSecond = tickDifference / timeDifference;
+    double ticksPSec = ticksPerMicroSecond * 1000;
+    previousPos = encoderPosTicks;
     previousTime = latestTime;
-    return mmPSec;
+    return ticksPSec;
 }
 
 
