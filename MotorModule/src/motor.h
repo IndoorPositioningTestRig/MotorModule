@@ -5,5 +5,6 @@
 
 int setupMotor();
 int setMotor(bool retract, int pwmSpeed);
+void getPwmSpeed(int &);
 
 #endif

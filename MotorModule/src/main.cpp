@@ -96,6 +96,9 @@ void Sm_Listening(void)
       Serial.println(dPos);
       Command = "";
       break;
+    case 5:
+      addEncoderPos();
+      break;
     default:
       Serial.print("Received unknown command: ");
       Serial.println(Command);
@@ -110,6 +113,10 @@ void Sm_SettingLength(void)
   // Set correct length
   int length = Command.substring(Command.indexOf('|', 3) + 1, Command.indexOf('|', 4)).toInt();
   int speed = Command.substring(Command.indexOf('|', 4) + 1, Command.length()).toInt();
+  Serial.print("length: ");
+  Serial.print(length);
+  Serial.print(" speed: ");
+  Serial.println(speed);
   setEncoderData(length, speed);
   SmState = DONE;
 }
@@ -121,7 +128,11 @@ void Sm_Moving(void)
 {
   bool retractDirection, done;
   int newSpeed;
+  getPwmSpeed(newSpeed);
   calculateMotorSpeed(retractDirection,newSpeed,done);
+  Serial.print("main got speed: ");
+  Serial.println(newSpeed);
+
   if (done)
   {
       SmState = DONE;

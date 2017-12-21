@@ -8,9 +8,12 @@
 #define PI 3.1415926535897932384626433832795
 
 //te ver >> diameter groter
-#define ENCODER_DIAMETER 20.75
+#define ENCODER_DIAMETER 40.75
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
+
+//test function:
+void addEncoderPos();
 
 int setupEncoder();
 

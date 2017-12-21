@@ -74,7 +74,7 @@ int getState(double & currentSpeed)
 	if (Positionsmoved < PositionsToMove / 2) {
 		//check if desired speed is reached
 		if (currentSpeed < DesiredSpeed)
-			//if not accelerate
+			//if accelerate
 			return ACCELERATE_STATE;
 		else
 			//if moving fast enough > stay moving
@@ -104,6 +104,7 @@ int accelerate(double & currentSpeed)
 	//50 * sin(((PI / 100)) * moved) - PI/2) + 50
 
 	currentSpeed = amplitude * sin((length * Positionsmoved) - xTrans) + yTrans;
+	if(currentSpeed < 1) currentSpeed =1;
 	TicksToReachDesSpeed = Positionsmoved;
 	return STATUS_OK;
 }
