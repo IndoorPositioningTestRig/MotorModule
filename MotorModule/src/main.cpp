@@ -1,5 +1,6 @@
+#include <SoftwareSerial.h>
 #include "main.h"
-
+#define MID 1
 
 /*
 * State machine declaration
@@ -8,7 +9,8 @@ typedef enum {
   LISTENING,
   SETTING_LENGTH,
   MOVING,
-  DONE
+  DONE,
+  WAIT_FOR_ACK
 } StateType;
 
 typedef struct
@@ -22,18 +24,20 @@ void Sm_Listening(void);
 void Sm_Done(void);
 void Sm_SettingLength(void);
 void Sm_Moving(void);
+void Sm_WaitForAck(void);
 
 StateMachineType StateMachine[] = {
     {LISTENING, Sm_Listening},
     {SETTING_LENGTH, Sm_SettingLength},
     {MOVING, Sm_Moving},
-    {DONE, Sm_Done}};
+    {DONE, Sm_Done},
+    {WAIT_FOR_ACK, Sm_WaitForAck}};
 
 StateType SmState = LISTENING;
 
-
 String Command = "0";
 
+SoftwareSerial Rs485Serial(6, 5);
 
 void setup()
 {
@@ -41,18 +45,19 @@ void setup()
   setupEncoder();
   setupSwitches();
 
+  Rs485Serial.begin(9600);
   Serial.begin(9600);
 }
 
 void loop()
 {
-  if(isSwitchPressed())
+  if (isSwitchPressed())
   {
     //ONE endswitch is pressed!
     //TODO: handle this problem
   }
 
-  if (SmState < 4)
+  if (SmState < 5)
   {
     (*StateMachine[SmState].func)();
   }
@@ -64,9 +69,9 @@ void loop()
 //state functions:
 void Sm_Listening(void)
 {
-  while (Serial.available())
+  while (Rs485Serial.available())
   {
-    Command += (char)Serial.read();
+    Command += (char)Rs485Serial.read();
   }
   if (Command != "")
   {
@@ -121,12 +126,12 @@ void Sm_Moving(void)
 {
   bool retractDirection, done;
   int newSpeed;
-  calculateMotorSpeed(retractDirection,newSpeed,done);
+  calculateMotorSpeed(retractDirection, newSpeed, done);
   if (done)
   {
-      SmState = DONE;
+    SmState = DONE;
   }
-  setMotor(retractDirection,newSpeed);
+  setMotor(retractDirection, newSpeed);
 }
 
 /*
@@ -136,8 +141,35 @@ void Sm_Moving(void)
 */
 void Sm_Done(void)
 {
-  // transmit done and wait for received
+  // transmit done
   Command = "";
   Serial.println("Done");
-  SmState = LISTENING;
+  Rs485Serial.write('4');
+  Rs485Serial.write('|');
+  Rs485Serial.write(MID);
+  // wait 1 second for receive
+  SmState = WAIT_FOR_ACK;
+  Serial.println("Waiting for acknowledge");
+  // after 1 second transmit again
+}
+
+int timer = 0;
+void Sm_WaitForAck(void)
+{  
+  while (Rs485Serial.available())
+  {
+    Command += (char)Rs485Serial.read();
+  }
+  int ProtocolId = Command.substring(0, 1).toInt();
+  int MidId = Command.substring(2, 3).toInt();
+  if (ProtocolId == 3 && MidId == MID)
+  {
+    SmState = LISTENING;
+  }
+  timer++;
+  if (timer > 1000)
+  {
+    timer = 0;
+    SmState = DONE;
+  }
 }
