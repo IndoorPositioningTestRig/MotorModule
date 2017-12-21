@@ -35,7 +35,7 @@ int setupEncoder(){
     // encoder setup
     pinMode(EncoderPinA, INPUT);
     pinMode(EncoderPinB, INPUT);
-      //interrupt setup:
+    //interrupt setup:
     attachInterrupt(digitalPinToInterrupt(EncoderPinA), interruptEncoder, RISING);
     return STATUS_OK;
 }
@@ -43,9 +43,8 @@ int setupEncoder(){
 int setEncoderData(int lengthmm, int speedmms ){
     //position in mm 
     double mmpertick = MMPERTICK;
-    double test = lengthmm / mmpertick;
     desiredPosTicks = (double)lengthmm / mmpertick;
-    desiredSpeedTicks = (double)speedmms / (double)mmpertick;
+    desiredSpeedTicks = (double)speedmms / mmpertick;
     int ticksToMove = desiredPosTicks - encoderPosTicks;
     if(ticksToMove < 0) {
         ticksToMove = ticksToMove * -1;
@@ -79,10 +78,6 @@ int setCurrentPosition(int locationmm)
 
 int calculateMotorSpeed(bool & retractDirection, int & speedPWM, bool & done)
 {
-    // Serial.print("encoderpos: ");
-    // Serial.print(encoderPosTicks);
-    // Serial.print(" desired :");
-    // Serial.println(desiredPosTicks);
     //first check if position is reached
     if((encoderPosTicks == desiredPosTicks)||((encoderPosTicks > desiredPosTicks) && direction) || ((encoderPosTicks < desiredPosTicks )&& !direction)){
         done = 1;
