@@ -147,6 +147,7 @@ void Sm_Done(void)
   Rs485Serial.write('4');
   Rs485Serial.write('|');
   Rs485Serial.write(MID);
+  Rs485Serial.write('#');
   // wait 1 second for receive
   SmState = WAIT_FOR_ACK;
   Serial.println("Waiting for acknowledge");
@@ -155,17 +156,21 @@ void Sm_Done(void)
 
 int timer = 0;
 void Sm_WaitForAck(void)
-{  
-  while (Rs485Serial.available())
+{
+  if (Rs485Serial.available())
   {
-    Command += (char)Rs485Serial.read();
+    while (Rs485Serial.available())
+    {
+      Command += (char)Rs485Serial.read();
+    }
+    int ProtocolId = Command.substring(0, 1).toInt();
+    int MidId = Command.substring(2, 3).toInt();
+    if (ProtocolId == 3 && MidId == MID)
+    {
+      SmState = LISTENING;
+    }
   }
-  int ProtocolId = Command.substring(0, 1).toInt();
-  int MidId = Command.substring(2, 3).toInt();
-  if (ProtocolId == 3 && MidId == MID)
-  {
-    SmState = LISTENING;
-  }
+
   timer++;
   if (timer > 1000)
   {
