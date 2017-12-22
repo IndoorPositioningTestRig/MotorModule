@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include "main.h"
-volatile const int MID = 2;
+volatile const int MID = 1;
 
 /*
 * State machine declaration
@@ -123,9 +123,10 @@ void Sm_Listening(void)
         break;
       }
     }
-    else{
-         Serial.print("Received Wrong destination");
-        Command = "";
+    else
+    {
+      Serial.print("Received Wrong destination");
+      Command = "";
     }
   }
 }
@@ -227,9 +228,14 @@ void Sm_WaitForAck(void)
     int ProtocolId = -1, ModuleId = -1;
     ProtocolId = Command.substring(0, 1).toInt();
     ModuleId = Command.substring(2, 3).toInt();
-    if (ProtocolId == 3 || ModuleId == MID)
+    if (ProtocolId == 3 && ModuleId == MID)
     {
       SmState = LISTENING;
+      Command = "";
+    }
+    else
+    {
+      Serial.println("Received ack for different module");
       Command = "";
     }
   }
