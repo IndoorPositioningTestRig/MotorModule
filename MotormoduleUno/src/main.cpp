@@ -34,7 +34,7 @@ StateMachineType StateMachine[] = {
 
 StateType SmState = LISTENING;
 
-String Command = "0";
+String Command = "";
 
 SoftwareSerial Rs485Serial(6, 5);
 
@@ -68,72 +68,72 @@ void loop()
 //state functions:
 void Sm_Listening(void)
 {
-  while (Rs485Serial.available())
+  bool isReceiving = false;
+  if (Serial.available())
   {
-    Command += (char)Rs485Serial.read();
-    delay(1);
+    char c = (char)Serial.read();
+    if (c == '*')
+      isReceiving = true;
+
+    while (isReceiving)
+    {
+      if (Serial.available())
+      {
+        c = (char)Serial.read();
+        if (c == '#')
+          isReceiving = false;
+        else
+          Command += c;
+      }
+    }
   }
   if (Command != "")
   {
-    Serial.print("Received command:");
+    int ProtocolId = -1, ModuleId = -1;
+    ProtocolId = Command.substring(0, 1).toInt();
+    ModuleId = Command.substring(2, 3).toInt();
+    Serial.print("Received: ");
     Serial.println(Command);
-    int ProtocolId = Command.substring(0, 1).toInt();
-    int ModuleId = Command.substring(2, 3).toInt();
-    switch (ProtocolId)
+    if (ModuleId == MID || ModuleId == 0)
     {
-    case 1:
-      if (ModuleId == MID)
+      switch (ProtocolId)
       {
-        SmState = SETTING_LENGTH;
+      case 1:
         Serial.println("Switched to setting length state");
-      }
-      else
-      {
+        SmState = SETTING_LENGTH;
+        break;
+      case 2:
+        SmState = MOVING;
+        Serial.println("Switched to moving state");
+        break;
+      case 5:
+        int ePos, dPos;
+        getEncoderData(ePos, dPos);
+        Serial.print("Current length: ");
+        Serial.print(ePos);
+        Serial.print(" Length in mm: ");
+        Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
+        Serial.print(" Desired length in mm: ");
+        Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
         Command = "";
-        Serial.println("Received command for wrong module");
+        break;
+        ;
       }
-      break;
-    case 2:
-      SmState = MOVING;
-      Serial.println("Switched to moving state");
-      break;
-    case 3:
-      resetEncoderData();
-      Command = "";
-      break;
-    case 4:
-      int ePos, dPos;
-      getEncoderData(ePos, dPos);
-      Serial.print("Current length: ");
-      Serial.print(ePos);
-      Serial.print(" Length in mm: ");
-      Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
-      Serial.print(" Desired length in mm: ");
-      Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
-      Command = "";
-      break;
-    case 5:
-      addEncoderPos();
-      break;
-    default:
-      Serial.print("Received unknown command: ");
-      Serial.println(Command);
-      Command = "";
-      break;
     }
   }
 }
 
 void Sm_SettingLength(void)
 {
+  int Length = Command.substring(Command.indexOf('|', 2) + 1, Command.lastIndexOf('|')).toInt();
+  int Speed = Command.substring(Command.lastIndexOf('|') + 1, Command.length()).toInt();
+
   // Set correct length
-  int length = Command.substring(Command.indexOf('|', 3) + 1, Command.indexOf('|', 4)).toInt();
-  int speed = Command.substring(Command.indexOf('|', 4) + 1, Command.length()).toInt();
   Serial.print("length: ");
-  Serial.print(length);
+  Serial.print(Length);
   Serial.print(" speed: ");
-  Serial.println(speed);
-  setEncoderData(length, speed);
+  Serial.println(Speed);
+  setEncoderData(Length, Speed);
 
   int ePos, dPos;
   getEncoderData(ePos, dPos);
@@ -155,8 +155,6 @@ void Sm_Moving(void)
   int newSpeed;
   getPwmSpeed(newSpeed);
   calculateMotorSpeed(retractDirection, newSpeed, done);
-  // Serial.print("main got speed: ");
-  // Serial.println(newSpeed);
 
   int ePos, dPos;
   getEncoderData(ePos, dPos);
@@ -180,9 +178,9 @@ void Sm_Moving(void)
 void Sm_Done(void)
 {
   // transmit done
-
   Command = "";
   Serial.println("Done");
+  Rs485Serial.write('*');
   Rs485Serial.write('4');
   Rs485Serial.write('|');
   char mid = '0' + MID;
@@ -197,15 +195,31 @@ void Sm_Done(void)
 int timer = 0;
 void Sm_WaitForAck(void)
 {
-  if (Rs485Serial.available())
+  bool isReceiving = false;
+  if (Serial.available())
   {
-    while (Rs485Serial.available())
+    char c = (char)Serial.read();
+    if (c == '*')
+      isReceiving = true;
+
+    while (isReceiving)
     {
-      Command += (char)Rs485Serial.read();
+      if (Serial.available())
+      {
+        c = (char)Serial.read();
+        if (c == '#')
+          isReceiving = false;
+        else
+          Command += c;
+      }
     }
-    int ProtocolId = Command.substring(0, 1).toInt();
-    int MidId = Command.substring(2, 3).toInt();
-    if (ProtocolId == 3 && MidId == MID)
+  }
+  if (Command != "")
+  {
+    int ProtocolId = -1, ModuleId = -1;
+    ProtocolId = Command.substring(0, 1).toInt();
+    ModuleId = Command.substring(2, 3).toInt();
+    if (ProtocolId == 3 || ModuleId == MID)
     {
       SmState = LISTENING;
       Command = "";

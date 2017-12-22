@@ -132,8 +132,8 @@ void interruptEncoder()
 double calculateCurrentSpeed()
 {
     latestTime = millis();
-    unsigned long timeDifference = latestTime - previousTime;
-    int tickDifference = encoderPosTicks - previousPos;
+    double timeDifference = latestTime - previousTime;
+    double tickDifference = encoderPosTicks - previousPos;
     double ticksPerMicroSecond = tickDifference / timeDifference;
     double ticksPSec = ticksPerMicroSecond * 1000;
     previousPos = encoderPosTicks;
