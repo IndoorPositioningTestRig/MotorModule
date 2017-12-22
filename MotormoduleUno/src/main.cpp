@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include "main.h"
-volatile const int MID = 2;
+volatile const int MID = 1;
 
 /*
 * State machine declaration
@@ -108,8 +108,8 @@ void Sm_Listening(void)
       Serial.print(ePos);
       Serial.print(" Length in mm: ");
       Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
-      Serial.print(" Ticks: ");
-      Serial.println(dPos);
+      Serial.print(" Desired length in mm: ");
+      Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
       Command = "";
       break;
     case 5:
@@ -134,6 +134,15 @@ void Sm_SettingLength(void)
   Serial.print(" speed: ");
   Serial.println(speed);
   setEncoderData(length, speed);
+
+  int ePos, dPos;
+  getEncoderData(ePos, dPos);
+  Serial.print("Current length: ");
+  Serial.print(ePos);
+  Serial.print(" Length in mm: ");
+  Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
+  Serial.print(" Desired length in mm: ");
+  Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
   SmState = DONE;
 }
 
@@ -146,8 +155,15 @@ void Sm_Moving(void)
   int newSpeed;
   getPwmSpeed(newSpeed);
   calculateMotorSpeed(retractDirection, newSpeed, done);
-  Serial.print("main got speed: ");
-  Serial.println(newSpeed);
+  // Serial.print("main got speed: ");
+  // Serial.println(newSpeed);
+
+  int ePos, dPos;
+  getEncoderData(ePos, dPos);
+  Serial.print("Length: ");
+  Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
+  Serial.print("Desired length: ");
+  Serial.println(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
 
   if (done)
   {
@@ -164,7 +180,7 @@ void Sm_Moving(void)
 void Sm_Done(void)
 {
   // transmit done
-  
+
   Command = "";
   Serial.println("Done");
   Rs485Serial.write('4');
