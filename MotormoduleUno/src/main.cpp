@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include "main.h"
-volatile const int MID = 1;
+volatile const int MID = 2;
 
 /*
 * State machine declaration
@@ -55,7 +55,7 @@ void loop()
     //ONE endswitch is pressed!
     //TODO: handle this problem
   }
-
+  
   if (SmState < 5)
   {
     (*StateMachine[SmState].func)();
@@ -71,7 +71,7 @@ void Sm_Listening(void)
   bool isReceiving = false;
   if (Rs485Serial.available())
   {
-    char c = (char)Serial.read();
+    char c = (char)Rs485Serial.read();
     if (c == '*')
       isReceiving = true;
 
@@ -143,6 +143,7 @@ void Sm_SettingLength(void)
   Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
   Serial.print(" Desired length in mm: ");
   Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
+  Command = "";
   SmState = DONE;
 }
 
