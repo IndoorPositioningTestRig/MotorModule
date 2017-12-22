@@ -69,7 +69,7 @@ void loop()
 void Sm_Listening(void)
 {
   bool isReceiving = false;
-  if (Serial.available())
+  if (Rs485Serial.available())
   {
     char c = (char)Serial.read();
     if (c == '*')
@@ -77,9 +77,9 @@ void Sm_Listening(void)
 
     while (isReceiving)
     {
-      if (Serial.available())
+      if (Rs485Serial.available())
       {
-        c = (char)Serial.read();
+        c = (char)Rs485Serial.read();
         if (c == '#')
           isReceiving = false;
         else
@@ -196,17 +196,17 @@ int timer = 0;
 void Sm_WaitForAck(void)
 {
   bool isReceiving = false;
-  if (Serial.available())
+  if (Rs485Serial.available())
   {
-    char c = (char)Serial.read();
+    char c = (char)Rs485Serial.read();
     if (c == '*')
       isReceiving = true;
 
     while (isReceiving)
     {
-      if (Serial.available())
+      if (Rs485Serial.available())
       {
-        c = (char)Serial.read();
+        c = (char)Rs485Serial.read();
         if (c == '#')
           isReceiving = false;
         else
