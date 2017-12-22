@@ -72,15 +72,27 @@ void Sm_Listening(void)
   while (Rs485Serial.available())
   {
     Command += (char)Rs485Serial.read();
+    delay(1);
   }
   if (Command != "")
   {
+    Serial.print("Received command:");
+    Serial.println(Command);
     int ProtocolId = Command.substring(0, 1).toInt();
+    int ModuleId = Command.substring(2, 3).toInt();
     switch (ProtocolId)
     {
     case 1:
-      SmState = SETTING_LENGTH;
-      Serial.println("Switched to setting length state");
+      if (ModuleId == MID)
+      {
+        SmState = SETTING_LENGTH;
+        Serial.println("Switched to setting length state");
+      }
+      else
+      {
+        Command = "";
+        Serial.println("Received command for wrong module");
+      }
       break;
     case 2:
       SmState = MOVING;
@@ -153,6 +165,7 @@ void Sm_Moving(void)
 void Sm_Done(void)
 {
   // transmit done
+  
   Command = "";
   Serial.println("Done");
   Rs485Serial.write('4');
@@ -179,11 +192,12 @@ void Sm_WaitForAck(void)
     if (ProtocolId == 3 && MidId == MID)
     {
       SmState = LISTENING;
+      Command = "";
     }
   }
 
   timer++;
-  if (timer > 1000)
+  if (timer > 10000)
   {
     timer = 0;
     SmState = DONE;
