@@ -55,7 +55,7 @@ void loop()
     //ONE endswitch is pressed!
     //TODO: handle this problem
   }
-  
+
   if (SmState < 5)
   {
     (*StateMachine[SmState].func)();
@@ -117,8 +117,15 @@ void Sm_Listening(void)
         Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
         Command = "";
         break;
-        ;
+      default:
+        Serial.print("Received unknown command");
+        Command = "";
+        break;
       }
+    }
+    else{
+         Serial.print("Received Wrong destination");
+        Command = "";
     }
   }
 }
