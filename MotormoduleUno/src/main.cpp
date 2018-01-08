@@ -92,8 +92,11 @@ void Sm_Listening(void)
     int ProtocolId = -1, ModuleId = -1;
     ProtocolId = Command.substring(0, 1).toInt();
     ModuleId = Command.substring(2, 3).toInt();
+    
     Serial.print("Received: ");
     Serial.println(Command);
+    Serial.print("protocolId: ");
+    Serial.println(ProtocolId);
     if (ModuleId == MID || ModuleId == 0)
     {
       switch (ProtocolId)
@@ -114,7 +117,7 @@ void Sm_Listening(void)
         Serial.print(" Length in mm: ");
         Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
         Serial.print(" Desired length in mm: ");
-        Serial.print(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
+        Serial.println(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
         Command = "";
         break;
       default:
