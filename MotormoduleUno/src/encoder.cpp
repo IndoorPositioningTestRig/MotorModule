@@ -22,7 +22,7 @@ bool direction;
 
 //PRIVATE FUNCTIONS
 void interruptEncoder();
-double calculateCurrentSpeed();
+bool calculateCurrentSpeed(double & speed);
 
 //test function delete this when testing some real stuff
 void addEncoderPos()
@@ -95,7 +95,10 @@ int calculateMotorSpeed(bool &retractDirection, int &speedPWM, bool &done)
         done = 0;
 
     //get current speed
-    double currentSpeedTicks = calculateCurrentSpeed();
+    double currentSpeedTicks = 0;
+    bool success = calculateCurrentSpeed(currentSpeedTicks);
+    if(!success)
+        return;
 
     //get desiredcurrent speed:
     double currentDesiredSpeed = currentSpeedTicks;
@@ -129,14 +132,20 @@ void interruptEncoder()
 }
 
 //calculates current speed in ticks per second
-double calculateCurrentSpeed()
+bool calculateCurrentSpeed(double & speed)
 {
     latestTime = millis();
+    int minDifference = 25;
     double timeDifference = latestTime - previousTime;
+    if(timeDifference < minDifference)
+        return false;
+    
     double tickDifference = encoderPosTicks - previousPos;
     double ticksPerMicroSecond = tickDifference / timeDifference;
     double ticksPSec = ticksPerMicroSecond * 1000;
+
     previousPos = encoderPosTicks;
     previousTime = latestTime;
-    return ticksPSec;
+    speed = ticksPSec;
+    return true;
 }
