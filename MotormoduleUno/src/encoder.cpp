@@ -5,7 +5,8 @@
 #define EncoderPinB 8
 
 // Local variables
-int encoderPosTicks = 0;
+double mmpertick = MMPERTICK;
+int encoderPosTicks = 1414 / mmpertick;
 int desiredPosTicks = 0;
 
 int desiredSpeedTicks = 0;
@@ -43,8 +44,6 @@ int setupEncoder()
 
 int setEncoderData(int lengthmm, int speedmms)
 {
-    //position in mm
-    double mmpertick = MMPERTICK;
     desiredPosTicks = (double)lengthmm / mmpertick;
     desiredSpeedTicks = (double)speedmms / mmpertick;
     int ticksToMove = desiredPosTicks - encoderPosTicks;
