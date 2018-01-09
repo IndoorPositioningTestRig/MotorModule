@@ -1,21 +1,30 @@
-int clockWise = 4;
-int counterClockWise = 7;
+// Pin declaration
+int clockWise = 7;
+int counterClockWise = 4;
 int pwmPin = 3;
-bool direction = true;
 
-// the setup routine runs once when you press reset:
+void Retract(int Speed) {
+  digitalWrite(clockWise, false);
+  digitalWrite(counterClockWise, !false);
+  analogWrite(pwmPin, Speed);
+}
+
+void Feed(int Speed) {
+  digitalWrite(clockWise, true);
+  digitalWrite(counterClockWise, !true);
+  analogWrite(pwmPin, Speed);
+}
+
+
 void setup() {
-  // declare pin 9 to be an output:
+  // Set pin modes
   pinMode(pwmPin, OUTPUT);
   pinMode(clockWise, OUTPUT);
   pinMode(counterClockWise, OUTPUT);
-  Serial.begin(9600);
-  digitalWrite(clockWise, direction);
-  digitalWrite(counterClockWise, !direction);
-  digitalWrite(pwmPin, 50);
+
+  Feed(20);
 }
 
-// the loop routine runs over and over again forever:
 void loop() {
   delay(1);
 }
