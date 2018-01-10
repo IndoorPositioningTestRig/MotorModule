@@ -22,7 +22,8 @@ bool direction;
 
 //PRIVATE FUNCTIONS
 void interruptEncoder();
-double calculateCurrentSpeed();
+bool calculateCurrentSpeed(double & speed);
+
 
 //test function delete this when testing some real stuff
 void addEncoderPos()
@@ -86,35 +87,38 @@ int calculateMotorSpeed(bool &retractDirection, int &speedPWM, bool &done)
     //first check if position is reached
     if ((encoderPosTicks == desiredPosTicks) || ((encoderPosTicks > desiredPosTicks) && direction) || ((encoderPosTicks < desiredPosTicks) && !direction))
     {
-        done = 1;
+        done = true;
         currentSpeedTicks = speedPWM = 0;
         retractDirection = false;
         return STATUS_OK;
     }
     else
-        done = 0;
+        done = false;
 
     //get current speed
-    double currentSpeedTicks = calculateCurrentSpeed();
+    double currentSpeedTicks = 0;
+    bool success = calculateCurrentSpeed(currentSpeedTicks);
+    if(!success)
+        return STATUS_OK;
 
     //get desiredcurrent speed:
     double currentDesiredSpeed = currentSpeedTicks;
     calculateSpeed(encoderPosTicks, currentDesiredSpeed);
-    // Serial.print("currentSpeed");
-    // Serial.print(currentSpeedTicks);
-    // Serial.print(" desiredSpeed: ");
-    // Serial.println(currentDesiredSpeed);
 
     //check if speed is hard enough
     //if going to hard
-    if (currentDesiredSpeed < currentSpeedTicks)
+    Serial.print("Current speed: ");
+    Serial.println(currentSpeedTicks);
+    Serial.print("Desired speed: ");
+    Serial.println(currentDesiredSpeed);
+    if (fabs(currentDesiredSpeed) < fabs(currentSpeedTicks))
         //Going to hard
-        speedPWM -= 1;
+        speedPWM -= 2;
     //if going to slow
-    else if (currentDesiredSpeed > currentSpeedTicks)
+    else if (fabs(currentDesiredSpeed) > fabs(currentSpeedTicks))
         //Go harder
-        speedPWM += 1;
-    //set speed in correct directio
+        speedPWM += 2;
+    //set speed in correct direction
     retractDirection = direction;
     return STATUS_OK;
 }
@@ -129,10 +133,14 @@ void interruptEncoder()
 }
 
 //calculates current speed in ticks per second
-double calculateCurrentSpeed()
+bool calculateCurrentSpeed(double & speed)
 {
     latestTime = millis();
+    int minDifference = 10;
     double timeDifference = latestTime - previousTime;
+    if(timeDifference < minDifference)
+        return false;
+
     double tickDifference = encoderPosTicks - previousPos;
     double ticksPerMicroSecond = tickDifference / timeDifference;
     double ticksPSec = ticksPerMicroSecond * 1000;

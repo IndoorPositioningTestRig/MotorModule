@@ -23,6 +23,7 @@ int PositionsToMove = 0;
 int DesiredSpeed = 0;
 //ticks needed to reach full speed
 int TicksToReachDesSpeed = 0;
+bool accelerated = false;
 
 //STATEMACHINE:
 int accelerate(double & currentSpeed);
@@ -49,7 +50,7 @@ int setLogicValues(int startPos, int positionsToMove, int desiredSpeed)
 	DesiredPos = StartPos + PositionsToMove;
 	DesiredSpeed = desiredSpeed;
 	TicksToReachDesSpeed = 0;
-
+	accelerated = false;
 	return STATUS_OK;
 }
 
@@ -58,9 +59,7 @@ int resetLogicValues() {
 }
 
 int calculateSpeed(int currentPos, double & speed) {
-	int deltaPos = currentPos - StartPos;
-	if (deltaPos < 0) deltaPos = deltaPos * -1;
-	Positionsmoved = deltaPos;
+	Positionsmoved = fabs(currentPos - StartPos);
 	int state = getState(speed);
 	stateFunctions[state](speed);
 	return STATUS_OK;
@@ -73,28 +72,39 @@ int getState(double & currentSpeed)
 	//check if 50% done   
 	if (Positionsmoved < PositionsToMove / 2) {
 		//check if desired speed is reached
-		if (currentSpeed < DesiredSpeed)
+		if (currentSpeed < DesiredSpeed && !accelerated){
+			Serial.println("STATE: Accelerating");
 			//if accelerate
 			return ACCELERATE_STATE;
-		else
+		}
+		else{
+			Serial.println("STATE: Moving");
 			//if moving fast enough > stay moving
 			return MOVE_STATE;
+		}
+			
 	}
 	else {
 		//check te amount of moving rope is lefs
 		int positionStillToDo = PositionsToMove - Positionsmoved;
 		//check if it is time for a brake
-		if (positionStillToDo <= TicksToReachDesSpeed)
+		if (positionStillToDo <= TicksToReachDesSpeed){
+			Serial.println("State: Braking");
 			//time to end this
 			return BRAKE_STATE;
-		else
+		}
+			
+		else{
+			Serial.println("State: Moving");
 			return MOVE_STATE;
+		}
+			
 	}
 }
 
 int accelerate(double & currentSpeed)
 {
-	double amplitude = DesiredSpeed *0.5;
+	double amplitude = DesiredSpeed *0.5 + 5;
 	double length =  M_PI / DesiredSpeed ;
 	double xTrans = 0.5 * M_PI;
 	double yTrans = DesiredSpeed * 0.5;
@@ -103,9 +113,24 @@ int accelerate(double & currentSpeed)
 	//desspeed = 100
 	//50 * sin(((PI / 100)) * moved) - PI/2) + 50
 
-	currentSpeed = amplitude * sin((length * Positionsmoved) - xTrans) + yTrans;
+	double newDesiredSpeed = amplitude * sin((length * Positionsmoved) - xTrans) + yTrans;
+	// Serial.print("currentspeed: ");
+	// Serial.print(currentSpeed);
+	// Serial.print("NewcalculatedSpeed: ");
+	// Serial.println(newDesiredSpeed);
 	if(currentSpeed < 1) currentSpeed =1;
-	TicksToReachDesSpeed = Positionsmoved;
+	if(fabs(currentSpeed) > fabs(newDesiredSpeed)){
+		currentSpeed +=1;
+	}
+	else
+		currentSpeed = newDesiredSpeed;
+
+	
+	if(currentSpeed >= DesiredSpeed -1){
+		accelerated = true;
+	}else{
+		TicksToReachDesSpeed = Positionsmoved;
+	}
 	return STATUS_OK;
 }
 

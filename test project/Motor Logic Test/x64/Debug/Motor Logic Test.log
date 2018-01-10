@@ -1,7 +1,0 @@
-﻿  main.cpp
-c:\users\renek\documents\git repos\motormodule\test project\motor logic test\main.cpp(1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\renek\documents\git repos\motormodule\test project\motor logic test\main.cpp(33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\renek\documents\git repos\motormodule\test project\motor logic test\main.cpp(42): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  logic.cpp
-  Generating Code...
-  Motor Logic Test.vcxproj -> C:\Users\renek\Documents\git repos\MotorModule\test project\x64\Debug\Motor Logic Test.exe
