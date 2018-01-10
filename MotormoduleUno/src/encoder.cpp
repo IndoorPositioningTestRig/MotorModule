@@ -5,7 +5,8 @@
 #define EncoderPinB 8
 
 // Local variables
-int encoderPosTicks = 0;
+double mmpertick = MMPERTICK;
+int encoderPosTicks = 1414 / mmpertick;
 int desiredPosTicks = 0;
 
 int desiredSpeedTicks = 0;
@@ -23,7 +24,6 @@ bool direction;
 //PRIVATE FUNCTIONS
 void interruptEncoder();
 bool calculateCurrentSpeed(double & speed);
-
 
 //test function delete this when testing some real stuff
 void addEncoderPos()
@@ -44,8 +44,6 @@ int setupEncoder()
 
 int setEncoderData(int lengthmm, int speedmms)
 {
-    //position in mm
-    double mmpertick = MMPERTICK;
     desiredPosTicks = (double)lengthmm / mmpertick;
     desiredSpeedTicks = (double)speedmms / mmpertick;
     int ticksToMove = desiredPosTicks - encoderPosTicks;
@@ -144,7 +142,9 @@ bool calculateCurrentSpeed(double & speed)
     double tickDifference = encoderPosTicks - previousPos;
     double ticksPerMicroSecond = tickDifference / timeDifference;
     double ticksPSec = ticksPerMicroSecond * 1000;
+
     previousPos = encoderPosTicks;
     previousTime = latestTime;
-    return ticksPSec;
+    speed = ticksPSec;
+    return true;
 }
