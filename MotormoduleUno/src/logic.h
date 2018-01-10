@@ -7,11 +7,9 @@
 //initialize the values for moving
 //startPos < desiredPos
 //speed alway positive
-int setLogicValues(int startPos, int positionsToMove, int desiredSpeed);
+void startMoving();
 
-int resetLogicValues();
-
-int calculateSpeed(int currentPos,  double & speed);
+void getCalculatedSpeed(int desiredSpeed, int currentPos, int desiredPos, bool feeding, double & calculatedSpeed, bool & done);
 
 
 #endif

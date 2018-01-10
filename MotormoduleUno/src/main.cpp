@@ -107,6 +107,7 @@ void Sm_Listening(void)
         break;
       case 2:
         SmState = MOVING;
+        startMovingEncoder();
         Serial.println("Switched to moving state");
         break;
       case 5:

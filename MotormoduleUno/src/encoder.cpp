@@ -6,7 +6,7 @@
 
 // Local variables
 double mmpertick = MMPERTICK;
-int encoderPosTicks = 1414 / mmpertick;
+int encoderPosTicks = 0;
 int desiredPosTicks = 0;
 
 int desiredSpeedTicks = 0;
@@ -56,14 +56,12 @@ int setEncoderData(int lengthmm, int speedmms)
     {
         direction = true;
     }
-    setLogicValues(encoderPosTicks, ticksToMove, desiredSpeedTicks);
     return STATUS_OK;
 }
 
 int resetEncoderData()
 {
     desiredPosTicks = currentSpeedTicks = encoderPosTicks = 0;
-    resetLogicValues();
     return STATUS_OK;
 }
 
@@ -80,42 +78,34 @@ int setCurrentPosition(int locationmm)
     return STATUS_OK;
 }
 
+int startMovingEncoder()
+{
+    startMoving();
+    return STATUS_OK;
+}
+
 int calculateMotorSpeed(bool &retractDirection, int &speedPWM, bool &done)
 {
-    //first check if position is reached
-    if ((encoderPosTicks == desiredPosTicks) || ((encoderPosTicks > desiredPosTicks) && direction) || ((encoderPosTicks < desiredPosTicks) && !direction))
-    {
-        done = true;
-        currentSpeedTicks = speedPWM = 0;
-        retractDirection = false;
-        return STATUS_OK;
-    }
-    else
-        done = false;
-
-    //get current speed
-    double currentSpeedTicks = 0;
-    bool success = calculateCurrentSpeed(currentSpeedTicks);
-    if(!success)
-        return STATUS_OK;
-
-    //get desiredcurrent speed:
-    double currentDesiredSpeed = currentSpeedTicks;
-    calculateSpeed(encoderPosTicks, currentDesiredSpeed);
-
+    done = false;
+    double calculatedspeed = 0;
+    getCalculatedSpeed(desiredSpeedTicks,encoderPosTicks,desiredPosTicks,direction, calculatedspeed, done);
     //check if speed is hard enough
     //if going to hard
     Serial.print("Current speed: ");
     Serial.println(currentSpeedTicks);
     Serial.print("Desired speed: ");
-    Serial.println(currentDesiredSpeed);
-    if (fabs(currentDesiredSpeed) < fabs(currentSpeedTicks))
+    Serial.println(calculatedspeed);
+    if(done){
+        speedPWM = 0;
+        return STATUS_OK;
+    }
+    if (fabs(calculatedspeed) < fabs(currentSpeedTicks))
         //Going to hard
-        speedPWM -= 2;
+        speedPWM -= 1;
     //if going to slow
-    else if (fabs(currentDesiredSpeed) > fabs(currentSpeedTicks))
+    else if (fabs(calculatedspeed) > fabs(currentSpeedTicks))
         //Go harder
-        speedPWM += 2;
+        speedPWM += 1;
     //set speed in correct direction
     retractDirection = direction;
     return STATUS_OK;

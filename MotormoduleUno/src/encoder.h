@@ -8,7 +8,7 @@
 #define PI 3.1415926535897932384626433832795
 
 //te ver >> diameter groter
-#define ENCODER_DIAMETER 40.75
+#define ENCODER_DIAMETER 21
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
 
@@ -22,7 +22,7 @@ int setupEncoder();
 int setEncoderData(int length, int speed);
 int resetEncoderData();
 int getEncoderData(int & encoderPosition, int & desiredPosition);
-
+int startMovingEncoder();
 int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done);
 
 #endif
