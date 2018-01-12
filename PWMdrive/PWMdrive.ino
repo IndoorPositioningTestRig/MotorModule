@@ -22,7 +22,7 @@ void setup() {
   pinMode(clockWise, OUTPUT);
   pinMode(counterClockWise, OUTPUT);
 
-  Feed(20);
+  Retract(35);
 }
 
 void loop() {

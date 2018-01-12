@@ -6,7 +6,8 @@
 
 // Local variables
 double mmpertick = MMPERTICK;
-int encoderPosTicks = 0;
+int encoderPosTicks = 1593 / mmpertick;
+//int encoderPosTicks = 0;
 int desiredPosTicks = 0;
 
 int desiredSpeedTicks = 0;
@@ -88,6 +89,9 @@ int calculateMotorSpeed(bool &retractDirection, int &speedPWM, bool &done)
 {
     done = false;
     double calculatedspeed = 0;
+    double currentSpeedTicks = 0;
+    bool success = calculateCurrentSpeed(currentSpeedTicks);
+    if(!success) return STATUS_OK;
     getCalculatedSpeed(desiredSpeedTicks,encoderPosTicks,desiredPosTicks,direction, calculatedspeed, done);
     //check if speed is hard enough
     //if going to hard
@@ -124,7 +128,7 @@ void interruptEncoder()
 bool calculateCurrentSpeed(double & speed)
 {
     latestTime = millis();
-    int minDifference = 10;
+    int minDifference = 5;
     double timeDifference = latestTime - previousTime;
     if(timeDifference < minDifference)
         return false;

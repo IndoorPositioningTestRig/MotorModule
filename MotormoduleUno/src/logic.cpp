@@ -11,24 +11,32 @@ void startMoving(){
 
 void getCalculatedSpeed(int desiredSpeed, int currentPos, int desiredPos, bool feeding, double & calculatedSpeed, bool & done)
 {
+
 	if(startMovingTime == 0) startMoving();
 	int currentTime = millis();
-	if((currentTime - startMovingTime) < 1000){
+	int deltaTime = currentTime - startMovingTime;
+
+	if(deltaTime < 1000){
 		//accelerating:
 		int x = currentTime = startMovingTime;
 		double y = x * (desiredSpeed / 500); 
 		calculatedSpeed = y;
+		Serial.println("accelerating");
 	}
-	else if((!feeding && (currentPos <= desiredPos))||(feeding && (currentPos >= desiredPos))){
+	else if((!feeding && (currentPos <= desiredPos))|| (feeding && (currentPos >= desiredPos))){
 		calculatedSpeed = 0;
 		done = true;
+		Serial.println("done");
 	}
-	else if((feeding && currentPos <= desiredPos - 50)|| (!feeding && currentPos >= desiredPos + 50 )){
+	else if((feeding && (currentPos <= desiredPos - 100)) || (!feeding && currentPos >= desiredPos + 100 )){
 		int x = fabs(desiredPos - currentPos);
-		double y = -(-desiredSpeed / 50) * x + desiredSpeed;
+		double y = -(-desiredSpeed / 100) * x + desiredSpeed;
 		calculatedSpeed = y;
+		Serial.println("braking");
 	}
-	else
+	else{
 		calculatedSpeed = desiredSpeed;
+		Serial.println("moving");
+	}
 }
 

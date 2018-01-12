@@ -1,0 +1,14 @@
+Kalibratiesettings:
+
+Diameter motormodule 1: 33.3
+Diameter motormodule 2: 32.8
+Diameter motormodule 3: 33.2
+Diameter motormodule 4: 33:3
+Diameter motormodule 5
+Diameter motormodule 6
+Diameter motormodule 7
+Diameter motormodule 8
+
+lengte naar middelpunt - lengte probe 
+1732 - 43.3
+lengthe lijn naar middelpunt 3d: 1689mm
