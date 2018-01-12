@@ -1,6 +1,7 @@
 #include <SoftwareSerial.h>
 #include "main.h"
-volatile const int MID = 2;
+volatile const int MID = 4;
+const char mid = '0' + MID;
 
 /*
 * State machine declaration
@@ -97,6 +98,8 @@ void Sm_Listening(void)
     Serial.println(Command);
     Serial.print("protocolId: ");
     Serial.println(ProtocolId);
+    int ePos, dPos;
+    getEncoderData(ePos, dPos);
     if (ModuleId == MID || ModuleId == 0)
     {
       switch (ProtocolId)
@@ -111,14 +114,32 @@ void Sm_Listening(void)
         Serial.println("Switched to moving state");
         break;
       case 5:
-        int ePos, dPos;
-        getEncoderData(ePos, dPos);
         Serial.print("Current length: ");
         Serial.print(ePos);
         Serial.print(" Length in mm: ");
         Serial.print(ePos * ((ENCODER_DIAMETER * PI) / TICKS));
         Serial.print(" Desired length in mm: ");
         Serial.println(dPos * ((ENCODER_DIAMETER * PI) / TICKS));
+        Command = "";
+        break;
+      case 6:
+        Rs485Serial.write('*');
+        Rs485Serial.write('6');
+        Rs485Serial.write('|');
+        Rs485Serial.write(mid);
+        Rs485Serial.write('|');
+        Rs485Serial.print(ePos);
+        Rs485Serial.write('#');
+        Command = "";
+        break;
+      case 7:
+        ePos = Command.substring(Command.indexOf('|', 2) + 1, Command.lastIndexOf('#')).toInt();
+        setEncoderPos(ePos);
+        Rs485Serial.write('*');
+        Rs485Serial.write('3');
+        Rs485Serial.write('|');
+        Rs485Serial.write(mid);
+        Rs485Serial.write('#');
         Command = "";
         break;
       default:
@@ -196,7 +217,6 @@ void Sm_Done(void)
   Rs485Serial.write('*');
   Rs485Serial.write('4');
   Rs485Serial.write('|');
-  char mid = '0' + MID;
   Rs485Serial.write(mid);
   Rs485Serial.write('#');
   // wait 1 second for receive

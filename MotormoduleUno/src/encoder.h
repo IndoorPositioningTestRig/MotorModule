@@ -7,8 +7,8 @@
 
 #define PI 3.1415926535897932384626433832795
 
-//te ver >> diameter groter
-#define ENCODER_DIAMETER 32.8
+//te ver >> diameter groterú
+#define ENCODER_DIAMETER 33.2
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
 
@@ -16,6 +16,8 @@
 void addEncoderPos();
 
 int setupEncoder();
+
+int setEncoderPos(int ePosMm);
 
 ///Sets the wanted encoder length and speed,
 ///Length in mm and speed in mm / s

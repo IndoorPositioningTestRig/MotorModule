@@ -6,7 +6,7 @@
 
 // Local variables
 double mmpertick = MMPERTICK;
-int encoderPosTicks = 1593 / mmpertick;
+int encoderPosTicks = 1683 / mmpertick;
 //int encoderPosTicks = 0;
 int desiredPosTicks = 0;
 
@@ -43,6 +43,12 @@ int setupEncoder()
     return STATUS_OK;
 }
 
+int setEncoderPos(int ePosMm)
+{
+    encoderPosTicks = ePosMm / mmpertick;
+    return STATUS_OK;
+}
+
 int setEncoderData(int lengthmm, int speedmms)
 {
     desiredPosTicks = (double)lengthmm / mmpertick;
@@ -68,8 +74,8 @@ int resetEncoderData()
 
 int getEncoderData(int &encoderPosition, int &desiredPosition)
 {
-    encoderPosition = encoderPosTicks;
-    desiredPosition = desiredPosTicks;
+    encoderPosition = encoderPosTicks * mmpertick;
+    desiredPosition = desiredPosTicks * mmpertick;
     return STATUS_OK;
 }
 
