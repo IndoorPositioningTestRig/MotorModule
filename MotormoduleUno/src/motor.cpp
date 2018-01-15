@@ -25,8 +25,6 @@ void getPwmSpeed(int &speed)
 int setMotor(bool retract, int speed){
     if(speed < 0 || speed > 255)
         return STATUS_ERROR;
-    // Serial.print("setting speed: ");
-    // Serial.println(speed);
     pwmSpeed = speed;
 
     digitalWrite(retractPin, retract);

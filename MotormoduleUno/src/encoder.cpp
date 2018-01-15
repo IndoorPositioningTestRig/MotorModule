@@ -45,11 +45,9 @@ int setupEncoder()
     return STATUS_OK;
 }
 
-int setEncoderPos(int ePosMm)
+int setEncoderPos(int millimeters)
 {
-    Serial.print("setting position to ");
-    Serial.println(ePosMm);
-    encoderPosTicks = ePosMm / mmpertick;
+    encoderPosTicks = millimeters / mmpertick;
     return STATUS_OK;
 }
 
