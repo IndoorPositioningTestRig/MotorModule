@@ -8,7 +8,7 @@
 #define PI 3.1415926535897932384626433832795
 
 //te ver >> diameter groterú
-#define ENCODER_DIAMETER 33.2
+#define ENCODER_DIAMETER 33.3
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
 

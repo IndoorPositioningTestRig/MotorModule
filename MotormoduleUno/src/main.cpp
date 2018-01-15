@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include "main.h"
-volatile const int MID = 4;
+volatile const int MID = 1;
 const char mid = '0' + MID;
 
 /*
@@ -19,6 +19,7 @@ typedef struct
   StateType State;
   void (*func)(void);
 } StateMachineType;
+
 
 void Sm_Listening(void);
 void Sm_Done(void);
@@ -100,6 +101,7 @@ void Sm_Listening(void)
     Serial.println(ProtocolId);
     int ePos, dPos;
     getEncoderData(ePos, dPos);
+    String ePosString = String(ePos);
     if (ModuleId == MID || ModuleId == 0)
     {
       switch (ProtocolId)
@@ -123,12 +125,17 @@ void Sm_Listening(void)
         Command = "";
         break;
       case 6:
+        Serial.print("got command 6");
         Rs485Serial.write('*');
         Rs485Serial.write('6');
         Rs485Serial.write('|');
         Rs485Serial.write(mid);
         Rs485Serial.write('|');
-        Rs485Serial.print(ePos);
+        
+        //Rs485Serial.print(ePos);
+        for(int i = 0; i < ePosString.length(); i++){
+          Rs485Serial.write(ePosString.charAt(i));
+        }
         Rs485Serial.write('#');
         Command = "";
         break;

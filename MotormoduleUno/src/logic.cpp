@@ -1,12 +1,10 @@
 #include "logic.h"
 
 unsigned long startMovingTime = 0;
-unsigned long accelerationTime = 0;
 
 
 void startMoving(){
 	startMovingTime = millis();
-	accelerationTime = accelerationTime + 1000;
 }
 
 void getCalculatedSpeed(int desiredSpeed, int currentPos, int desiredPos, bool feeding, double & calculatedSpeed, bool & done)
@@ -22,21 +20,25 @@ void getCalculatedSpeed(int desiredSpeed, int currentPos, int desiredPos, bool f
 		double y = x * (desiredSpeed / 500); 
 		calculatedSpeed = y;
 		Serial.println("accelerating");
+		return;
 	}
-	else if((!feeding && (currentPos <= desiredPos))||(feeding && (currentPos >= desiredPos))){
+	if((!feeding && (currentPos <= desiredPos))||(feeding && (currentPos >= desiredPos))){
 		calculatedSpeed = 0;
 		done = true;
+		startMovingTime = 0;
 		Serial.println("done");
+		return;
 	}
-	else if((feeding && currentPos <= desiredPos - 50)|| (!feeding && currentPos >= desiredPos + 50 )){
+	if((feeding && currentPos <= desiredPos - 50)|| (!feeding && currentPos >= desiredPos + 50 )){
 		int x = fabs(desiredPos - currentPos);
 		double y = -(-desiredSpeed / 50) * x + desiredSpeed;
 		calculatedSpeed = y;
 		Serial.println("braking");
+		return;
 	}
-	else{
-		calculatedSpeed = desiredSpeed;
-		Serial.println("moving");
-	}
+	//else
+	calculatedSpeed = desiredSpeed;
+	Serial.println("moving");
+	
 }
 
