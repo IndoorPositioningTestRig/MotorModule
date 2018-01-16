@@ -14,21 +14,22 @@ void getCalculatedSpeed(int desiredSpeed, int currentPos, int desiredPos, bool f
 	int currentTime = millis();
 	int deltaTime = currentTime - startMovingTime;
 
+	if((!feeding && (currentPos <= desiredPos))||(feeding && (currentPos >= desiredPos))){
+		//done
+		calculatedSpeed = 0;
+		done = true;
+		startMovingTime = 0;
+		// Serial.print(" calculatedSpeed: ");
+		// Serial.println(calculatedSpeed);
+		return;
+	}
+
 	if(deltaTime < 1000){
 		//accelerating:
 		int x = currentTime - startMovingTime;
 		double y = x * (desiredSpeed / 1000); 
 		calculatedSpeed = y;
 		if(calculatedSpeed <1) calculatedSpeed = 1;
-		// Serial.print(" calculatedSpeed: ");
-		// Serial.println(calculatedSpeed);
-		return;
-	}
-	if((!feeding && (currentPos <= desiredPos))||(feeding && (currentPos >= desiredPos))){
-		//done
-		calculatedSpeed = 0;
-		done = true;
-		startMovingTime = 0;
 		// Serial.print(" calculatedSpeed: ");
 		// Serial.println(calculatedSpeed);
 		return;

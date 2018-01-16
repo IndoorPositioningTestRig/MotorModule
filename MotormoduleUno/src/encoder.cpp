@@ -6,10 +6,10 @@
 
 // Local variables
 double mmpertick = MMPERTICK;
-// int encoderPosTicks = 1683 / mmpertick;
-// int desiredPosTicks = 1683 / mmpertick;
-int encoderPosTicks = 0;
-int desiredPosTicks = 0;
+int encoderPosTicks = 1683 / mmpertick;
+int desiredPosTicks = 1683 / mmpertick;
+// int encoderPosTicks = 0;
+// int desiredPosTicks = 0;
 int encoderDiffTicks = 0;
 
 int desiredSpeedTicks = 0;
