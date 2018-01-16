@@ -1,5 +1,4 @@
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 
 #include "Arduino.h"
 #include "encoder.h"
@@ -10,6 +9,3 @@
 
 #define STATUS_OK 1
 #define STATUS_ERROR 0
-
-
-#endif

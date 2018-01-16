@@ -8,7 +8,6 @@
 int pwmSpeed = 0;
 
 int setupMotor(){
-    Serial.println("setting up motor");
     // Motor driver setup
     pinMode(retractPin, OUTPUT);
     pinMode(motorDriverPwmPin, OUTPUT);

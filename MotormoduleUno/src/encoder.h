@@ -1,5 +1,4 @@
-#ifndef ENCODER_H
-#define ENCODER_H
+#pragma once
 
 #include "Arduino.h"
 #include "main.h"
@@ -12,19 +11,12 @@
 #define TICKS 128
 #define MMPERTICK (ENCODER_DIAMETER * PI) / TICKS
 
-//test function:
-void addEncoderPos();
-
 int setupEncoder();
 
 int setEncoderPos(int ePosMm);
 
 ///Sets the wanted encoder length and speed,
 ///Length in mm and speed in mm / s
-int setEncoderData(int length, int speed);
-int resetEncoderData();
+int setEncoderData(int lengthmm, int speedmms);
 int getEncoderData(int & encoderPosition, int & desiredPosition);
-int startMovingEncoder();
 int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done);
-
-#endif

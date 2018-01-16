@@ -10,7 +10,6 @@ void interruptSwitch();
 
 int setupSwitches()
 {
-    Serial.println("setting up switches");
     attachInterrupt(digitalPinToInterrupt(SwitchCheckMaxForcePin), interruptSwitch, CHANGE);
     attachInterrupt(digitalPinToInterrupt(SwitchCheckMinForcePin), interruptSwitch, CHANGE);
     checkMaxForceSwitchPressed = digitalRead(SwitchCheckMaxForcePin);
