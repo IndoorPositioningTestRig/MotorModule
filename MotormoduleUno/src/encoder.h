@@ -18,5 +18,5 @@ int setEncoderPos(int ePosMm);
 ///Sets the wanted encoder length and speed,
 ///Length in mm and speed in mm / s
 int setEncoderData(int lengthmm, int speedmms);
-int getEncoderData(int & encoderPosition, int & desiredPosition);
+int getEncoderData(int & encoderPosition, int & desiredPosition, int & desiredSpeed);
 int calculateMotorSpeed(bool & retractDirection, int & speed, bool & done);

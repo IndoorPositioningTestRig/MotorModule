@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include "main.h"
 
-volatile const int MID = 4;
+volatile const int MID = 1;
 const char mid = '0' + MID;
 
 SoftwareSerial Rs485Serial(6, 5);
@@ -65,9 +65,10 @@ void Listening()
     Serial.println(Command);
     Serial.print("protocolId: ");
     Serial.println(ProtocolId);
-    int currentLength, desiredLength, Length, Speed;
-    getEncoderData(currentLength, desiredLength);
+    int currentLength, desiredLength, desiredSpeed, Length, Speed;
+    getEncoderData(currentLength, desiredLength, desiredSpeed);
     String lengthInMm = String(currentLength);
+    String dummy;
     if (ModuleId == MID || ModuleId == 0)
     {
       switch (ProtocolId)
@@ -80,9 +81,24 @@ void Listening()
       case 2: // start moving
         isMoving = true;
         break;
-      case 6: // Send length to application
+      case 3:
         Rs485Serial.write('*');
-        Rs485Serial.write('6');
+        Rs485Serial.write('3');
+        Rs485Serial.write('|');
+        Rs485Serial.write(mid);
+        Rs485Serial.write('|');
+        dummy = String(desiredLength);
+        for (int i = 0; i < dummy.length(); i++)
+          Rs485Serial.write(dummy.charAt(i));
+        Rs485Serial.write('|');
+        dummy = String(desiredSpeed);
+        for (int i = 0; i < dummy.length(); i++)
+          Rs485Serial.write(dummy.charAt(i));
+        Rs485Serial.write('#');
+        break;
+      case 4: // Send length to application
+        Rs485Serial.write('*');
+        Rs485Serial.write('4');
         Rs485Serial.write('|');
         Rs485Serial.write(mid);
         Rs485Serial.write('|');
@@ -92,7 +108,7 @@ void Listening()
         }
         Rs485Serial.write('#');
         break;
-      case 7: // Set encoder position
+      case 5: // Set encoder position
         desiredLength = Command.substring(Command.indexOf('|', 2) + 1, Command.lastIndexOf('#')).toInt();
         setEncoderPos(desiredLength);
         break;
@@ -115,8 +131,8 @@ void Moving()
   getPwmSpeed(newSpeed);
   calculateMotorSpeed(retractDirection, newSpeed, done);
 
-  int currentLength, desiredLength;
-  getEncoderData(currentLength, desiredLength);
+  //int currentLength, desiredLength;
+  //getEncoderData(currentLength, desiredLength);
 
   setMotor(retractDirection, newSpeed);
   if (done)

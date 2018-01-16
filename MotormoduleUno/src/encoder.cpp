@@ -57,10 +57,11 @@ int setEncoderData(int lengthmm, int speedmms)
     return STATUS_OK;
 }
 
-int getEncoderData(int &encoderPositionMm, int &desiredPositionMm)
+int getEncoderData(int &encoderPositionMm, int &desiredPositionMm, int &desiredSpeedMm)
 {
     encoderPositionMm = encoderPosTicks * mmpertick;
     desiredPositionMm = desiredPosTicks * mmpertick;
+    desiredSpeedMm = desiredSpeedTicks * mmpertick;
     return STATUS_OK;
 }
 
