@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include "main.h"
 
-volatile const int MID = 1;
+volatile const int MID = 4;
 const char mid = '0' + MID;
 
 SoftwareSerial Rs485Serial(6, 5);
@@ -88,10 +88,6 @@ void Listening()
         Rs485Serial.write(mid);
         Rs485Serial.write('|');
         dummy = String(desiredLength);
-        for (int i = 0; i < dummy.length(); i++)
-          Rs485Serial.write(dummy.charAt(i));
-        Rs485Serial.write('|');
-        dummy = String(desiredSpeed);
         for (int i = 0; i < dummy.length(); i++)
           Rs485Serial.write(dummy.charAt(i));
         Rs485Serial.write('#');
