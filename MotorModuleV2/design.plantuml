@@ -1,0 +1,111 @@
+@startuml MotorModuleV2
+
+class Main {
+
+}
+
+' Sends and listens to the communication potocol.
+class Communication {
+
+}
+
+' Determines what the arduino should be doing
+class StateMachine {
+
+}
+
+' Move the motor based on communication (through StateMachine) 
+class Mover {
+
+}
+
+' Calibrate the motor by determining the length of the cable
+class Calibrator {
+
+}
+
+package MotorLogic {
+    ' This controls what the motor does based on what it received through
+    ' the communication protocal and the readings from the encoder and endswitch.
+    class Logic {
+        - int speed
+
+        + void move(int len)
+        + void setSpeed(int speed)    
+    }
+
+    ' Counts how far the rope has moved 
+    class Encoder {
+
+    }
+
+    ' Detects wether the rope is stretching or not
+    ' and in which direction
+    class ForceDetector {
+
+    }
+
+    ' Controls the motor
+    class Motor {
+
+    }
+}
+
+Main --> StateMachine
+StateMachine --> Mover
+StateMachine --> Communication
+StateMachine --> Calibrator 
+
+Mover --> Logic
+Calibrator --> Logic
+
+Logic --> Encoder
+Logic --> ForceDetector
+Logic --> Motor 
+
+@enduml
+
+@startuml Controller 
+
+class Main {
+
+}
+
+package UserInterface {
+    ' Will most likely be a rest api with a web front-end
+    class UserInterface {
+
+    }
+}
+
+package ModuleController {
+    class Controller {
+
+    }
+
+    ' Calculates the length each cable has to be
+    class Logic {
+
+    }
+
+    ' Communicates with the test rig
+    class Communication {
+
+    }
+}
+
+package DataStorage {
+    ' Save test data to sql, files or something else...
+    class DataStorage {
+
+    }
+}
+
+Main <--> UserInterface
+Main --> Controller
+Main --> DataStorage
+
+Controller --> Logic
+Controller --> Communication
+
+@enduml
