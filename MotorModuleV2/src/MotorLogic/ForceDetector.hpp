@@ -4,6 +4,12 @@
 namespace MotorLogic {
     class ForceDetector {
     public:
+        ForceDetector() = default;
+        void init();
+        static void triggerMax();
+        static void triggerMin();
+        static bool max;
+        static bool min;
     private:
     };
 }
