@@ -17,7 +17,7 @@ namespace MotorLogic {
 }
 
 // RS 485
-const int PIN_RS485_A = 6;
-const int PIN_RS485_B = 5;
+const int PIN_RS485_A = 0;
+const int PIN_RS485_B = 1;
 
 #endif // PINS_HPP

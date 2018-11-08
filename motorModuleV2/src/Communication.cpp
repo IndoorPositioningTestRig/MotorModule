@@ -19,12 +19,24 @@ void Communication::listen() {
   if (!_isInitialised) {
     init();
   }
+  digitalWrite(9, HIGH);
 
   while(_rsSerial.available()) {
-    int32_t command = _rsSerial.read();
-    _buffer.emplace_back(command);
+    //int32_t command = _rsSerial.read();
+    char * buffer;
+    Serial1.readBytesUntil('\n', buffer, 100);
+    //_buffer.emplace_back(command);
+    //Serial.println(command);
+    Serial.println(buffer);
   }
-  printBuffer();
+  if(_buffer.size() > 0){
+    printBuffer();
+  }
+}
+
+void Communication::write(){
+  _rsSerial.write(HIGH);
+ // _rsSerial.flush();
 }
 
 void Communication::printBuffer() {

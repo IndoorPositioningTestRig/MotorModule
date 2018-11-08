@@ -11,6 +11,7 @@ static Communication *communication;
 void setup()
 {
   Serial.begin(9600);
+    while (!Serial);
 #ifdef WAIT_SERIAL
   while (!Serial)
     ;
@@ -19,12 +20,17 @@ void setup()
   logic = new MotorLogic::Logic(255);
   counter = new MotorLogic::Counter();
 
-  communication = new Communication();
+  // communication = new Communication();
+  Serial1.begin(9600);
 
   pinMode(10, INPUT);
   digitalWrite(10, 0);
   pinMode(11, INPUT);
   digitalWrite(11, 0);
+
+  //pinMode(6, OUTPUT);
+  pinMode(9, OUTPUT);
+  digitalWrite(9, LOW); //LOW is write, HIGH is read
 }
 
 void move(int len)
@@ -59,10 +65,24 @@ void move(int len)
     }
   }
 }
+int count = 0;
+bool pin9 = true;
 
 void loop()
 {
-  communication->listen();
+  //delay(1000);
+  //communication->listen();
+  // communication->write();
+  //delay(1000);
+  delay(10);
+  Serial1.write("Herro \n");
+
+
+ 
+  
+  
+
+
 
   //logic->loop();
   // logic->move(1000);

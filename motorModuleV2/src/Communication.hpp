@@ -9,6 +9,7 @@ public:
   Communication();
   void init();
   void listen();
+  void write();
 
   void printBuffer();
 private:
