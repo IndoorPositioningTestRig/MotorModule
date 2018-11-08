@@ -11,21 +11,6 @@ Motor::Motor()
   pinMode(PIN_MOTOR_COUNTER_CLOCKWISE, OUTPUT);
 }
 
-void Motor::move(int amount, unsigned short speed)
-{
-  if (amount > 0)
-  {
-    this->feed(speed);
-  }
-  else
-  {
-    amount *= -1;
-    this->retract(speed);
-  }
-  delay(amount);
-  stop();
-}
-
 void Motor::feed(unsigned short speed)
 {
   digitalWrite(PIN_MOTOR_CLOCKWISE, true);

@@ -14,9 +14,7 @@ class Motor
 {
 public:
   Motor();
-  void move(int amount, unsigned short speed);
 
-private:
   void retract(unsigned short speed);
   void feed(unsigned short speed);
   void stop();
