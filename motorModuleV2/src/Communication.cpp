@@ -2,12 +2,13 @@
 
 #include <SoftwareSerial.h>
 #include "Pins.hpp"
+#include <Arduino.h>
 
 Communication::Communication() :
   _rsSerial(PIN_RS485_A, PIN_RS485_B),
   _isInitialised(false)
 {
-  _buffer = {};
+  //_buffer = {};
 }
 
 void Communication::init() {
@@ -22,16 +23,20 @@ void Communication::listen() {
   digitalWrite(9, HIGH);
 
   while(_rsSerial.available()) {
-    //int32_t command = _rsSerial.read();
+
+    // int32_t command = _rsSerial.read();
+    // Serial.print("command");
+    // Serial.println(command);
+
     char * buffer;
     Serial1.readBytesUntil('\n', buffer, 100);
     //_buffer.emplace_back(command);
     //Serial.println(command);
     Serial.println(buffer);
   }
-  if(_buffer.size() > 0){
-    printBuffer();
-  }
+  // if(_buffer.size() > 0){
+  //   printBuffer();
+  // }
 }
 
 void Communication::write(){
@@ -41,18 +46,18 @@ void Communication::write(){
 
 void Communication::printBuffer() {
   // int32 buffer
-  Serial.println("Buffer - int32_t: [");
-  for (int32_t i : _buffer) {
-    Serial.print(i);
-    Serial.print(" ");
-  }
-  Serial.print("]\n");
+  // Serial.println("Buffer - int32_t: [");
+  // for (int32_t i : _buffer) {
+  //   Serial.print(i);
+  //   Serial.print(" ");
+  // }
+  // Serial.print("]\n");
   
-  // Char buffer
-  Serial.println("Buffer - char: [");  
-  for (int32_t i : _buffer) {
-    Serial.print((char)i);
-    Serial.print(" ");
-  }
-  Serial.print("]\n");
+  // // Char buffer
+  // Serial.println("Buffer - char: [");  
+  // for (int32_t i : _buffer) {
+  //   Serial.print((char)i);
+  //   Serial.print(" ");
+  // }
+  // Serial.print("]\n");
 }

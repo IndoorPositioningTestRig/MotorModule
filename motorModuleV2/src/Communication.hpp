@@ -2,7 +2,7 @@
 #define COMMUNICATION_HPP
 
 #include <SoftwareSerial.h>
-#include <vector>
+//#include <vector>
 
 class Communication {
 public:
@@ -13,7 +13,7 @@ public:
 
   void printBuffer();
 private:
-  std::vector<int32_t> _buffer;
+  //std::vector<int32_t> _buffer;
   SoftwareSerial _rsSerial;
   bool _isInitialised;
 };
