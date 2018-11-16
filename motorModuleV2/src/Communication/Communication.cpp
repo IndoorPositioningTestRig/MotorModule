@@ -5,8 +5,7 @@
 #include "SerialWrapper.hpp"
 
 Communication::Communication() : _mode(RS485_UNINITIALIZED)
-{
-}
+{}
 
 void Communication::init(int mode)
 {

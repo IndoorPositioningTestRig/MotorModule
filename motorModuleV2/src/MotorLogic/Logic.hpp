@@ -21,16 +21,17 @@ public:
 
 private:
   unsigned short _speed;
+  double _p;
+  double _i;
+  double _d;
+  double _setpoint;
+  double _output;
+  double _input;
+  
   ForceDetector _forceDetector;
   Motor _motor;
   Counter _counter;
 
-  double _p;
-  double _i;
-  double _d;
-  double _input;
-  double _output;
-  double _setpoint;
 
   PID * _pid;
   bool pid = false;
