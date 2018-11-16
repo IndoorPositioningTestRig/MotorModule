@@ -102,6 +102,7 @@ void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_
 
   Serial1.write((char*)frame);
   Serial.println((char*)frame);
+  free(frame);
 }
 
 
