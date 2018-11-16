@@ -90,13 +90,15 @@ void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_
   }
   digitalWrite(PIN_RS485_READ_WRITE, RS485_WRITE);
 
-  uint8_t * frame = (uint8_t*)calloc(messageLength + 5, sizeof(uint8_t));
-  frame[0] = sender;
-  frame[1] = target;
-  frame[2] = type;
-  frame[3] = messageLength + 5;
+  uint8_t * frame = (uint8_t*)calloc(messageLength + 6, sizeof(uint8_t));
+  frame[0] = 0x80;
+  frame[1] = sender;
+  frame[2] = target;
+  frame[3] = type;
+  frame[4] = messageLength + 5;
 
-  memcpy(&frame[4], message, messageLength);
+  memcpy(&frame[5], message, messageLength);
+  frame[messageLength+5] = '\0';
 
   Serial1.write((char*)frame);
   Serial.println((char*)frame);
