@@ -5,6 +5,12 @@
 #include <Arduino.h>
 #include "Message.hpp"
 
+class TYPES {
+  static const uint8_t REQUEST = 1;
+  static const uint8_t COMMAND = 2;
+  static const uint8_t RESPONSE = 3;
+};
+
 class Communication {
 public:
   Communication();

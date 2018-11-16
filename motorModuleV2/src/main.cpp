@@ -49,7 +49,11 @@ void commLoop()
   if (success)
   {
     // Message received!
-
+    
+    // Check if the arduino is the target
+    if (message.target == 0) {
+      logic->message(message);
+    }
   }
 
   // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);

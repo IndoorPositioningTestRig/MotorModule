@@ -5,9 +5,14 @@
 #include "ForceDetector.hpp"
 #include <PID_v1.h>
 #include "Counter.hpp"
+#include "../Communication/Message.hpp"
 
 namespace MotorLogic
 {
+
+static const int STATE_IDLE = 0;
+static const int STATE_PID = 1;
+
 class Logic
 {
 public:
@@ -19,7 +24,12 @@ public:
   bool isForceMin();
   bool isForceMax();
 
+  void message(Message message);
 private:
+  void pidLoop();
+
+  int _state;
+
   unsigned short _speed;
   double _p;
   double _i;
@@ -34,7 +44,6 @@ private:
 
 
   PID * _pid;
-  bool pid = false;
 
   constexpr static double ERROR_MARGIN = 10;
   constexpr static double OUTPUT_MARGIN = 20;
