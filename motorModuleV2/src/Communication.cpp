@@ -83,6 +83,26 @@ void Communication::decodeMessage()
   }
 }
 
+void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t * message, size_t messageLength) {
+  if (!_isInitialised)
+  {
+    init();
+  }
+  digitalWrite(PIN_RS485_READ_WRITE, RS485_WRITE);
+
+  uint8_t * frame = (uint8_t*)calloc(messageLength + 5, sizeof(uint8_t));
+  frame[0] = sender;
+  frame[1] = target;
+  frame[2] = type;
+  frame[3] = messageLength + 5;
+
+  memcpy(&frame[4], message, messageLength);
+
+  Serial1.write((char*)frame);
+  Serial.println((char*)frame);
+}
+
+
 // void Communication::write(uint8_t sender, uint8_t target, uint8_t type, std::vector<uint8_t> message)
 // {
 //   if (!_isInitialised)
