@@ -41,20 +41,21 @@ void Logic::message(Message msg)
   String data = "";
   for (size_t i = 0; i < msg.length - 5; i++)
   {
-    data += msg.data[i];
+    data += (char)msg.data[i];
   }
+  Serial.println(data);
 
   if (data == "go")
   {
     _state = STATE_PID;
   }
-  else if (data = "r")
+  else if (data == "r")
   {
     _motor.retract(255);
     delay(100);
     _motor.stop();
   }
-  else if (data = "f")
+  else if (data == "f")
   {
     _motor.feed(255);
     delay(100);

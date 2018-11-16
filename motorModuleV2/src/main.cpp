@@ -19,7 +19,7 @@ void setup()
 #endif
   Serial.print("starting...");
   //logic = new MotorLogic::Logic();
-  //test = new TestNamespace::Test();
+  test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();
 
@@ -35,7 +35,7 @@ void setup()
 void pidLoop()
 {
   // logic->loop();
-  // test->manualPIDloop();
+  test->manualPIDloop();
   // test->teabagging();
   // bool test = false;
   // Serial.print("test: ");
@@ -59,17 +59,18 @@ void commLoop()
     // Message received!
     
     // Check if the arduino is the target
-    if (message.target == 0) {
+    if (message.target == 0 || message.target == id->id) {
       logic->message(message);
     }
   }
 
-  communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
-  delay(2000);
+  // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
+  // delay(2000);
 }
 
 void loop()
 {
   logic->loop();
   commLoop();
+  //pidLoop();
 }
