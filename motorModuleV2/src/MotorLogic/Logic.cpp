@@ -37,8 +37,11 @@ bool Logic::isForceMax()
 }
 
 void Logic::loop() {
+  _input = _counter.getCount();
+  
+  
+  // PID Stuff
   if(pid) {
-    _input = _counter.getCount();
 
     double error = abs(_setpoint - _input); 
     _pid->Compute();

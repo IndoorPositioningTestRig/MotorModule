@@ -4,23 +4,19 @@
 #include "Test/Test.hpp"
 #include "Communication/Message.hpp"
 
-static MotorLogic::Logic * logic;
-static Communication* communication;
-static TestNamespace::Test* test;
+static MotorLogic::Logic *logic;
+static Communication *communication;
+// static TestNamespace::Test *test;
 
 void setup()
 {
   Serial.begin(9600);
   Serial1.begin(9600);
-  while (!Serial || !Serial1)
-    ;
 #ifdef WAIT_SERIAL
-  while (!Serial)
-    ;
+  while (!Serial);
 #endif
   Serial.print("starting...");
-  //logic = new MotorLogic::Logic();
-  // test = new TestNamespace::Test();
+  logic = new MotorLogic::Logic();
 
   communication = new Communication();
   communication->init();
@@ -30,17 +26,20 @@ void setup()
 
 void pidLoop()
 {
-  //logic->loop();
+  // logic->loop();
   // test->manualPIDloop();
-  //test->teabagging();
-  //  bool test = false;
-  //  Serial.print("test: ");
-  //  Serial.println(test);
-  //  if(!test){
-  //    Serial.println("in if statement");
-  //  } else {
-  //    Serial.println("in else statement");
-  //  }
+  // test->teabagging();
+  // bool test = false;
+  // Serial.print("test: ");
+  // Serial.println(test);
+  // if (!test)
+  // {
+  //   Serial.println("in if statement");
+  // }
+  // else
+  // {
+  //   Serial.println("in else statement");
+  // }
 }
 
 void commLoop()
@@ -49,13 +48,8 @@ void commLoop()
   bool success = communication->receive(message);
   if (success)
   {
-    // Debug stuff...
-    Serial.print("read: ");
-    for (uint8_t i = 0; i < message.length - 5; i++)
-    {
-      Serial.print((char)message.data[i]);
-    }
-    Serial.println("");
+    // Message received!
+
   }
 
   // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
@@ -64,5 +58,6 @@ void commLoop()
 
 void loop()
 {
+  logic->loop();
   commLoop();
 }
