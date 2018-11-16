@@ -104,32 +104,3 @@ void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_
   Serial.println((char*)frame);
   free(frame);
 }
-
-
-// void Communication::write(uint8_t sender, uint8_t target, uint8_t type, std::vector<uint8_t> message)
-// {
-//   if (!_isInitialised)
-//   {
-//     init();
-//   }
-//   digitalWrite(PIN_RS485_READ_WRITE, RS485_WRITE);
-
-//   uint8_t length = message.size()+5;
-//   std::vector<uint8_t> full;
-
-//   full.push_back(0x80);
-//   full.push_back(sender);
-//   full.push_back(target);
-//   full.push_back(type);
-//   full.push_back(length);
-//   full.insert(full.end(), message.begin(), message.end());
-
-//   // std::vector<uint8_t>::iterator it;
-//   // message.insert(it, length);
-//   // message.insert(it, type);
-//   // message.insert(it, target);
-//   // message.insert(it, sender);
-
-//   Serial1.write((char*)full.data());
-//   Serial.println((char*)full.data());
-// }
