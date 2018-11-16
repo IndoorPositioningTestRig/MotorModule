@@ -37,7 +37,7 @@ void setup()
 void loop()
 {
   //logic->loop();
-  test->manualPIDloop();
+  // test->manualPIDloop();
   //test->teabagging();
   //  bool test = false;
   //  Serial.print("test: ");
@@ -50,6 +50,11 @@ void loop()
 
   //communication->listen();
 
+  uint8_t message[11] = {
+    'h', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r','l','d'
+  };
+  communication->write_c(11, 22, 33, message, 11);
+  delay(2000);
   // std::vector<uint8_t> message;
   // std::string s = "hello world!!";
   // //char str[] = "hello world!!";
