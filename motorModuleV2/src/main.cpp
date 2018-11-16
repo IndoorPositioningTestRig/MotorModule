@@ -3,10 +3,12 @@
 #include "Communication/Communication.hpp"
 #include "Test/Test.hpp"
 #include "Communication/Message.hpp"
+#include "Id.hpp"
 
 static MotorLogic::Logic * logic;
 static Communication* communication;
 static TestNamespace::Test* test;
+static Id* id;
 
 void setup()
 {
@@ -20,10 +22,14 @@ void setup()
 #endif
   Serial.print("starting...");
   //logic = new MotorLogic::Logic();
-  // test = new TestNamespace::Test();
+  test = new TestNamespace::Test();
+  id = new Id();
 
   communication = new Communication();
   communication->init();
+
+  Serial.print("ID: ");
+  Serial.println(id->id);
 
   Serial.print("Done!\nlooping...\n");
 }
@@ -31,7 +37,7 @@ void setup()
 void pidLoop()
 {
   //logic->loop();
-  // test->manualPIDloop();
+  //test->manualPIDloop();
   //test->teabagging();
   //  bool test = false;
   //  Serial.print("test: ");
@@ -45,24 +51,28 @@ void pidLoop()
 
 void commLoop()
 {
-  Message message;
-  bool success = communication->receive(message);
-  if (success)
-  {
-    // Debug stuff...
-    Serial.print("read: ");
-    for (uint8_t i = 0; i < message.length - 5; i++)
-    {
-      Serial.print((char)message.data[i]);
-    }
-    Serial.println("");
-  }
+  // Message message;
+  // bool success = communication->receive(message);
+  // if (success)
+  // {
+  //   // Debug stuff...
+  //   Serial.print("read: ");
+  //   for (uint8_t i = 0; i < message.length - 5; i++)
+  //   {
+  //     Serial.print((char)message.data[i]);
+  //   }
+  //   Serial.println("");
+  // }
 
-  // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
-  // delay(2000);
+  communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
+  delay(2000);
 }
 
 void loop()
 {
-  commLoop();
+  //commLoop();
+  //pidLoop();
+
+
+  delay(1000);
 }
