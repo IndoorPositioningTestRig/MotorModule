@@ -4,6 +4,7 @@
 #include "Test/Test.hpp"
 //#include <vector>
 //#include <string>
+#include "Message.hpp"
 
 
 static MotorLogic::Logic *logic;
@@ -13,18 +14,18 @@ static TestNamespace::Test *test;
 void setup()
 {
   Serial.begin(9600);
-  while (!Serial)
-    ;
+  Serial1.begin(9600);
+  while (!Serial || !Serial1);
 #ifdef WAIT_SERIAL
   while (!Serial)
     ;
 #endif
-  Serial.println("starting...");
+  Serial.print("starting...");
   //logic = new MotorLogic::Logic();
-  test = new TestNamespace::Test();
+  // test = new TestNamespace::Test();
 
   communication = new Communication();
-  Serial1.begin(9600);
+  communication->init();
 
   // pinMode(10, INPUT);
   // digitalWrite(10, 0);
@@ -32,6 +33,7 @@ void setup()
   // digitalWrite(11, 0);
 
   // pinMode(6, OUTPUT);
+  Serial.print("Done!\nlooping...\n");
 }
 
 void loop()
@@ -48,25 +50,18 @@ void loop()
   //    Serial.println("in else statement");
   //  }
 
-  //communication->listen();
+  Message message;
+  bool success = communication->receive(message);
+  if (success) {
+    // Debug stuff...
+    Serial.print("read: ");
+    for (uint8_t i = 0; i < message.length - 5; i++)
+    {
+      Serial.print((char)message.data[i]);
+    }
+    Serial.println("");
+  }
 
-  uint8_t message[11] = {
-    'h', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r','l','d'
-  };
-  communication->write_c(11, 22, 33, message, 11);
-  delay(2000);
-  // std::vector<uint8_t> message;
-  // std::string s = "hello world!!";
-  // //char str[] = "hello world!!";
-  // //message.emplace_back((uint8_t)str);
-  // //std::copy(str.c_str(), str.c_str() + str.length(), message);
-  // message.push_back('H');
-  // message.push_back('E');
-  // message.push_back('L');
-  // message.push_back('L');
-  // message.push_back('O');
-  // message.push_back('!');
-
-  // communication->write(11, 22, 33, message);
+  // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
   // delay(2000);
 }

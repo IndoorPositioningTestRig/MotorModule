@@ -25,5 +25,7 @@ const int PIN_RS485_READ_WRITE = 9;
 
 const int RS485_READ = HIGH;
 const int RS485_WRITE = LOW;
+const int RS485_UNINITIALIZED = -1;
+
 
 #endif // PINS_HPP

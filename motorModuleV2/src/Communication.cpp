@@ -1,96 +1,76 @@
-namespace std {
-  void __throw_length_error(char const*) {
-  }
+namespace std
+{
+void __throw_length_error(char const *)
+{
 }
+} // namespace std
 
 #include "Communication.hpp"
 #include "Pins.hpp"
 #include <Arduino.h>
 //#include <vector.h>
+#include "Message.hpp"
 
-Communication::Communication() : _isInitialised(false)
+Communication::Communication() : _mode(RS485_UNINITIALIZED)
 {
 }
 
-void Communication::init()
+void Communication::init(int mode)
 {
-  Serial1.begin(9600);
-  _isInitialised = true;
-
+  Serial.begin(9600);
   pinMode(PIN_RS485_READ_WRITE, OUTPUT);
-  digitalWrite(PIN_RS485_READ_WRITE, RS485_READ);
+  setMode(RS485_READ);
+  while (!Serial);
 }
 
-void Communication::listen()
+bool Communication::receive(Message& message)
 {
-  if (!_isInitialised)
-  {
-    init();
-  }
-  digitalWrite(PIN_RS485_READ_WRITE, RS485_READ);
+  setMode(RS485_READ);
 
-  while (Serial1.available())
+  while (Serial.available())
   {
-    byte input = Serial1.read();
+    byte input = Serial.read();
     if (input == 0x80)
     {
-      decodeMessage();
+      Message recMessage = decodeMessage();
+      message = recMessage;
+      return true;
     }
+    return false;
   }
+  return false;
 }
 
-void Communication::decodeMessage()
+void Communication::setMode(int mode)
 {
-  int pos = 0;
-  uint8_t sender = 0;
-  uint8_t target = 0;
-  uint8_t type = 0;
-  size_t length = 0;
-  bool loop = true;
-  while (Serial1.available() && loop)
+  if (mode == RS485_WRITE)
   {
-    byte input = Serial1.read();
-    switch (pos)
-    {
-    case 0:
-      sender = input;
-      break;
-    case 1:
-      target = input;
-      break;
-    case 2:
-      type = input;
-      break;
-    case 3:
-      length = input;
-
-      Serial1.readBytes(_buffer, length - 5);
-      loop = false;
-      Serial.println("read!");
-
-      for(size_t i = 0; i < length - 5; i++){
-        Serial.print((char)_buffer[i]);
-      }
-      Serial.println("");
-
-      break;
-    }
-    pos++;
+    digitalWrite(PIN_RS485_READ_WRITE, RS485_WRITE);
+    _mode = RS485_WRITE;
   }
-  if (pos != 0)
+  else
   {
-    pos = 0;
+    digitalWrite(PIN_RS485_READ_WRITE, RS485_READ);
+    _mode = RS485_READ;
   }
 }
 
-void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t * message, size_t messageLength) {
-  if (!_isInitialised)
-  {
-    init();
-  }
-  digitalWrite(PIN_RS485_READ_WRITE, RS485_WRITE);
+Message Communication::decodeMessage()
+{
+  uint8_t headerBuff[4] = {};
+  Serial.readBytes(headerBuff, 4);
+  Message message(headerBuff[0], headerBuff[1], headerBuff[2], headerBuff[3]);
 
-  uint8_t * frame = (uint8_t*)calloc(messageLength + 6, sizeof(uint8_t));
+  Serial.readBytes(message.data, message.length - 5);
+
+  return message;
+}
+
+void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t *message, size_t messageLength)
+{
+  setMode(RS485_WRITE);
+
+  uint8_t *frame = (uint8_t *)calloc(messageLength + 6, sizeof(uint8_t));
   frame[0] = 0x80;
   frame[1] = sender;
   frame[2] = target;
@@ -98,9 +78,8 @@ void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_
   frame[4] = messageLength + 5;
 
   memcpy(&frame[5], message, messageLength);
-  frame[messageLength+5] = '\0';
+  frame[messageLength + 5] = '\0';
 
-  Serial1.write((char*)frame);
-  Serial.println((char*)frame);
+  Serial.write((char *)frame);
   free(frame);
 }
