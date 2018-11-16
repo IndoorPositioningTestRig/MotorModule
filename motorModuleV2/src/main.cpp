@@ -1,21 +1,19 @@
 #include <Arduino.h>
 #include "MotorLogic/Logic.hpp"
-#include "Communication.hpp"
+#include "Communication/Communication.hpp"
 #include "Test/Test.hpp"
-//#include <vector>
-//#include <string>
-#include "Message.hpp"
+#include "Communication/Message.hpp"
 
-
-static MotorLogic::Logic *logic;
-static Communication *communication;
-static TestNamespace::Test *test;
+static MotorLogic::Logic * logic;
+static Communication* communication;
+static TestNamespace::Test* test;
 
 void setup()
 {
   Serial.begin(9600);
   Serial1.begin(9600);
-  while (!Serial || !Serial1);
+  while (!Serial || !Serial1)
+    ;
 #ifdef WAIT_SERIAL
   while (!Serial)
     ;
@@ -27,16 +25,10 @@ void setup()
   communication = new Communication();
   communication->init();
 
-  // pinMode(10, INPUT);
-  // digitalWrite(10, 0);
-  // pinMode(11, INPUT);
-  // digitalWrite(11, 0);
-
-  // pinMode(6, OUTPUT);
   Serial.print("Done!\nlooping...\n");
 }
 
-void loop()
+void pidLoop()
 {
   //logic->loop();
   // test->manualPIDloop();
@@ -49,10 +41,14 @@ void loop()
   //  } else {
   //    Serial.println("in else statement");
   //  }
+}
 
+void commLoop()
+{
   Message message;
   bool success = communication->receive(message);
-  if (success) {
+  if (success)
+  {
     // Debug stuff...
     Serial.print("read: ");
     for (uint8_t i = 0; i < message.length - 5; i++)
@@ -64,4 +60,9 @@ void loop()
 
   // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
   // delay(2000);
+}
+
+void loop()
+{
+  commLoop();
 }
