@@ -15,7 +15,7 @@ void ForceDetector::init()
   max = digitalRead(PIN_MAX_FORCE) == HIGH;
   min = digitalRead(PIN_MIN_FORCE) == HIGH;
 
-  Serial.println("attach interruppt");
+  Serial.println("attach interrupt");
   attachInterrupt(digitalPinToInterrupt(PIN_MAX_FORCE), []() {
     ForceDetector::triggerMax();
   }, CHANGE);

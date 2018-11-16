@@ -2,6 +2,9 @@
 #include "MotorLogic/Logic.hpp"
 #include "Communication.hpp"
 #include "Test/Test.hpp"
+//#include <vector>
+//#include <string>
+
 
 static MotorLogic::Logic *logic;
 static Communication *communication;
@@ -10,7 +13,8 @@ static TestNamespace::Test *test;
 void setup()
 {
   Serial.begin(9600);
-    while (!Serial);
+  while (!Serial)
+    ;
 #ifdef WAIT_SERIAL
   while (!Serial)
     ;
@@ -19,52 +23,45 @@ void setup()
   //logic = new MotorLogic::Logic();
   test = new TestNamespace::Test();
 
-
-  //communication = new Communication();
-  //Serial1.begin(9600);
+  communication = new Communication();
+  Serial1.begin(9600);
 
   // pinMode(10, INPUT);
   // digitalWrite(10, 0);
   // pinMode(11, INPUT);
   // digitalWrite(11, 0);
 
-  //pinMode(6, OUTPUT);
-  // pinMode(9, OUTPUT);
-  // digitalWrite(9, HIGH); //LOW is write, HIGH is read
+  // pinMode(6, OUTPUT);
 }
 
 void loop()
 {
- //logic->loop();
- test->manualPIDloop();
- //test->teabagging();
-//  bool test = false;
-//  Serial.print("test: ");
-//  Serial.println(test);
-//  if(!test){
-//    Serial.println("in if statement");
-//  } else {
-//    Serial.println("in else statement");
-//  }
+  //logic->loop();
+  test->manualPIDloop();
+  //test->teabagging();
+  //  bool test = false;
+  //  Serial.print("test: ");
+  //  Serial.println(test);
+  //  if(!test){
+  //    Serial.println("in if statement");
+  //  } else {
+  //    Serial.println("in else statement");
+  //  }
 
- //delay(1000);
+  //communication->listen();
 
-//  while(Serial1.available()){
-//    char input = Serial1.read();
-//    Serial.print("Serial1: ");
-//    Serial.println(input);
-//  }
+  // std::vector<uint8_t> message;
+  // std::string s = "hello world!!";
+  // //char str[] = "hello world!!";
+  // //message.emplace_back((uint8_t)str);
+  // //std::copy(str.c_str(), str.c_str() + str.length(), message);
+  // message.push_back('H');
+  // message.push_back('E');
+  // message.push_back('L');
+  // message.push_back('L');
+  // message.push_back('O');
+  // message.push_back('!');
 
-//   while(Serial.available()){
-//    char input = Serial.read();
-//    Serial.print("Serial: ");
-//    Serial.println(input);
-//  }
-
-
-//communication->listen();
-
-// delay(10);
-// Serial1.write("Herro\n");
-// Serial.println("Herro");
+  // communication->write(11, 22, 33, message);
+  // delay(2000);
 }

@@ -19,6 +19,8 @@ Counter::Counter()
     encoder->tick();
   }, CHANGE);
   delay(500);
+
+  Serial.println("Encoder initialized");
 }
 
 long Counter::getCount()
