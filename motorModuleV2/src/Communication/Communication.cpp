@@ -5,15 +5,16 @@
 #include "SerialWrapper.hpp"
 
 Communication::Communication() : _mode(RS485_UNINITIALIZED)
-{
-}
+{}
 
 void Communication::init(int mode)
 {
   SerialWrapper::begin(9600);
   pinMode(PIN_RS485_READ_WRITE, OUTPUT);
   setMode(RS485_READ);
+#ifdef WAIT_SERIAL
   SerialWrapper::waitReady();
+#endif
 }
 
 bool Communication::receive(Message& message)
