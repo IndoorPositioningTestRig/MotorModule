@@ -92,7 +92,7 @@ void Logic::pidLoop()
       Serial.print(", end:");
       Serial.println(end);
       Serial.print("delta:");
-      Serial.print(end - startTime);
+      Serial.println(end - startTime);
       loopCount = 0;
     }
   }
@@ -103,11 +103,11 @@ void Logic::pidLoop()
   double error = abs(_setpoint - _input);
   _pid->Compute();
 
-  Serial.print("pid(in: ");
-  Serial.print(_input);
-  Serial.print(", out: ");
-  Serial.print(_output);
-  Serial.println(")");
+  // Serial.print("pid(in: ");
+  // Serial.print(_input);
+  // Serial.print(", out: ");
+  // Serial.print(_output);
+  // Serial.println(")");
 
   setSpeed(abs(_output));
   if (abs(error) < ERROR_MARGIN && abs(_output) < OUTPUT_MARGIN)

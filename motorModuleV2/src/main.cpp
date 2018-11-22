@@ -6,9 +6,9 @@
 #include "Id.hpp"
 
 static MotorLogic::Logic * logic;
+static Id* id;
 static Communication* communication;
 static TestNamespace::Test* test;
-static Id* id;
 
 void setup()
 {
