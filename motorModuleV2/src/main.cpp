@@ -18,7 +18,6 @@ void setup()
   while (!Serial);
 #endif
   Serial.print("starting...");
-  //logic = new MotorLogic::Logic();
   test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();
@@ -26,8 +25,10 @@ void setup()
   communication = new Communication();
   communication->init();
 
+  //id->putId(2);
+
   Serial.print("ID: ");
-  Serial.println(id->id);
+  Serial.println(id->getId());
 
   Serial.print("Done!\nlooping...\n");
 }
@@ -57,9 +58,8 @@ void commLoop()
   if (success)
   {
     // Message received!
-    
     // Check if the arduino is the target
-    if (message.target == 0 || message.target == id->id) {
+    if (message.target == 0 || message.target == id->getId()) {
       logic->message(message);
     }
   }

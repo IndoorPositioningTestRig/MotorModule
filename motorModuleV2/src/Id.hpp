@@ -8,12 +8,11 @@ class Id
 {
 public:
 explicit Id();
-    void writeId(byte id);
-    byte readId();
-    byte id;
+    void putId(int id);
+    int getId();
 private:
     const int ID_ADDR = 0;
-
+    int id;
 };
 
 

@@ -1,15 +1,21 @@
 #include <Id.hpp>
 #include <EEPROM.h>
 
-
-Id::Id(){
-    id = readId();
+Id::Id()
+{
+    id = 0;
 }
 
-void Id::writeId(byte id){
-    EEPROM.write(ID_ADDR, id);
+void Id::putId(int id)
+{
+    EEPROM.put(ID_ADDR, id);
 }
 
-byte Id::readId(){
-    id = EEPROM.read(ID_ADDR);
+int Id::getId()
+{
+    if (id == 0)
+    {
+        EEPROM.get(ID_ADDR, id);
+    }
+    return id;
 }
