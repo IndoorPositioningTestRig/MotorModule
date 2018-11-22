@@ -4,6 +4,12 @@
 
 using namespace MotorLogic;
 
+static int loopCount = 0;
+static int startTime = 0;
+static bool first = true;
+
+
+
 void Logic::setSpeed(unsigned short speed)
 {
   _speed = speed;
@@ -71,6 +77,29 @@ void Logic::message(Message msg)
 
 void Logic::pidLoop()
 {
+
+  if (first) {
+    startTime = millis();
+    first = false;
+  } else {
+    if (loopCount >= 1000) {
+      first = true;
+      int end = millis();
+      Serial.print("Loops:");
+      Serial.println(loopCount);
+      Serial.print("start:");
+      Serial.print(startTime);
+      Serial.print(", end:");
+      Serial.println(end);
+      Serial.print("delta:");
+      Serial.print(end - startTime);
+      loopCount = 0;
+    }
+  }
+
+  loopCount++;
+
+
   double error = abs(_setpoint - _input);
   _pid->Compute();
 
@@ -86,6 +115,19 @@ void Logic::pidLoop()
     _state = STATE_IDLE;
     _motor.stop();
     Serial.println("END!");
+    
+    // Speed debug
+    first = true;
+    int end = millis();
+    Serial.print("Loops:");
+    Serial.println(loopCount);
+    Serial.print("start:");
+    Serial.print(startTime);
+    Serial.print(", end:");
+    Serial.println(end);
+    Serial.print("delta:");
+    Serial.print(end - startTime);
+    loopCount = 0;
     return;
   }
 

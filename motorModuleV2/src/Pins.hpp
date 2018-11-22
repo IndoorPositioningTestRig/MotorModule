@@ -6,7 +6,12 @@
 namespace MotorLogic {
   // Encoder    
   const int PIN_ENCODER_A = 2; // interrupt
-  const int PIN_ENCODER_B = 3; // interrupt //pin 3 for mega2560, pin 8 for genuino101
+//pin 3 for mega2560, pin 8 for genuino101
+#ifdef MEGA
+  const int PIN_ENCODER_B = 3; // interrupt
+#else
+  const int PIN_ENCODER_B = 8; // interrupt
+#endif
 
   // Motor driver
   const int PIN_MOTOR_PWM = 6;
