@@ -67,6 +67,10 @@ void Logic::message(Message msg)
     delay(100);
     _motor.stop();
   }
+  else if (data == "r_e")
+  {
+    this->_counter.reset();
+  }
   else
   {
     int val = data.toInt();

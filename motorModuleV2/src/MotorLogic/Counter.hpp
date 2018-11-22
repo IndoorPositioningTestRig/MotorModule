@@ -11,6 +11,7 @@ class Counter
 public:
   Counter();
   long getCount();
+  void reset();
   static RotaryEncoder *encoder;
 
 private:

@@ -27,3 +27,8 @@ long Counter::getCount()
 {
   return encoder->getPosition();
 }
+
+void Counter::reset()
+{
+  encoder->setPosition(0);
+}
