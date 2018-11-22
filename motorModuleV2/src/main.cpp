@@ -3,10 +3,12 @@
 #include "Communication/Communication.hpp"
 #include "Test/Test.hpp"
 #include "Communication/Message.hpp"
+#include "Id.hpp"
 
-static MotorLogic::Logic *logic;
-static Communication *communication;
-// static TestNamespace::Test *test;
+static MotorLogic::Logic * logic;
+static Communication* communication;
+static TestNamespace::Test* test;
+static Id* id;
 
 void setup()
 {
@@ -16,10 +18,16 @@ void setup()
   while (!Serial);
 #endif
   Serial.print("starting...");
+  //logic = new MotorLogic::Logic();
+  test = new TestNamespace::Test();
+  id = new Id();
   logic = new MotorLogic::Logic();
 
   communication = new Communication();
   communication->init();
+
+  Serial.print("ID: ");
+  Serial.println(id->id);
 
   Serial.print("Done!\nlooping...\n");
 }
@@ -27,7 +35,7 @@ void setup()
 void pidLoop()
 {
   // logic->loop();
-  // test->manualPIDloop();
+  test->manualPIDloop();
   // test->teabagging();
   // bool test = false;
   // Serial.print("test: ");
@@ -51,7 +59,7 @@ void commLoop()
     // Message received!
     
     // Check if the arduino is the target
-    if (message.target == 0) {
+    if (message.target == 0 || message.target == id->id) {
       logic->message(message);
     }
   }
@@ -64,4 +72,5 @@ void loop()
 {
   logic->loop();
   commLoop();
+  //pidLoop();
 }
