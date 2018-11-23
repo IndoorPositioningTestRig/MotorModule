@@ -24,7 +24,7 @@ public:
   bool isForceMin();
   bool isForceMax();
 
-  void message(Message message);
+  void message(Communication::Message message);
 private:
   void pidLoop();
 

@@ -2,6 +2,9 @@
 #define MESSAGE_HPP
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
+
+namespace Communication {
 
 class Message {
 public:
@@ -15,4 +18,5 @@ public:
   uint8_t data[255];
 };
 
+} // Communication
 #endif // MESSAGE_HPP

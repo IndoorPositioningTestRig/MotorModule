@@ -1,5 +1,7 @@
 #include "SerialWrapper.hpp"
 
+using namespace Communication;
+
 void SerialWrapper::begin(unsigned long baud) {
   #ifdef USE_SERIAL_1
     Serial1.begin(baud);

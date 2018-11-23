@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+namespace Communication {
+
 class SerialWrapper {
 public:
   static void begin(unsigned long baud);
@@ -14,4 +16,5 @@ public:
   static size_t write(char* data);
 };
 
+} // namespace Communication
 #endif // SERIAL_WRAPPER_HPP

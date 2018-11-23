@@ -1,14 +1,9 @@
 #include <Arduino.h>
 #include "Logic.hpp"
 #include <PID_v1.h>
+#include <ArduinoJson.h>
 
 using namespace MotorLogic;
-
-static int loopCount = 0;
-static int startTime = 0;
-static bool first = true;
-
-
 
 void Logic::setSpeed(unsigned short speed)
 {
@@ -42,76 +37,47 @@ bool Logic::isForceMax()
   return _forceDetector.max;
 }
 
-void Logic::message(Message msg)
+void Logic::message(Communication::Message msg)
 {
-  String data = "";
-  for (size_t i = 0; i < msg.length - 5; i++)
-  {
-    data += (char)msg.data[i];
-  }
-  Serial.println(data);
+  StaticJsonBuffer<255> jsonBuffer;
+  JsonObject& jsonMsg = jsonBuffer.parseObject((char*)msg.data);
 
-  if (data == "go")
+  const char * command = jsonMsg["command"];
+  String commandStr = String(command);
+
+  // Interpet the message.
+  if (commandStr == "setPoint")
   {
+    int value = jsonMsg["point"];
+    _setpoint = value;
+    _state = STATE_IDLE;
+  }
+  else if (commandStr == "retract") {
+    int amount = jsonMsg["amount"];
+    int speed = jsonMsg["speed"];
+    _motor.retract(speed);
+    delay(amount);
+    _motor.stop();
+  }
+  else if (commandStr == "feed") {
+    int amount = jsonMsg["amount"];
+    int speed = jsonMsg["speed"];
+    _motor.feed(speed);
+    delay(amount);
+    _motor.stop();
+  }
+  else if (commandStr == "execute") {
     _state = STATE_PID;
   }
-  else if (data == "r")
-  {
-    _motor.retract(255);
-    delay(100);
-    _motor.stop();
-  }
-  else if (data == "f")
-  {
-    _motor.feed(255);
-    delay(100);
-    _motor.stop();
-  }
-  else if (data == "r_e")
-  {
-    this->_counter.reset();
-  }
-  else
-  {
-    int val = data.toInt();
-    _setpoint = val;
-    _state = STATE_IDLE;
+  else if (commandStr == "resetEncoder") {
+    _counter.reset();
   }
 }
 
 void Logic::pidLoop()
 {
-
-  if (first) {
-    startTime = millis();
-    first = false;
-  } else {
-    if (loopCount >= 1000) {
-      first = true;
-      int end = millis();
-      Serial.print("Loops:");
-      Serial.println(loopCount);
-      Serial.print("start:");
-      Serial.print(startTime);
-      Serial.print(", end:");
-      Serial.println(end);
-      Serial.print("delta:");
-      Serial.println(end - startTime);
-      loopCount = 0;
-    }
-  }
-
-  loopCount++;
-
-
   double error = abs(_setpoint - _input);
   _pid->Compute();
-
-  // Serial.print("pid(in: ");
-  // Serial.print(_input);
-  // Serial.print(", out: ");
-  // Serial.print(_output);
-  // Serial.println(")");
 
   setSpeed(abs(_output));
   if (abs(error) < ERROR_MARGIN && abs(_output) < OUTPUT_MARGIN)
@@ -119,19 +85,6 @@ void Logic::pidLoop()
     _state = STATE_IDLE;
     _motor.stop();
     Serial.println("END!");
-    
-    // Speed debug
-    first = true;
-    int end = millis();
-    Serial.print("Loops:");
-    Serial.println(loopCount);
-    Serial.print("start:");
-    Serial.print(startTime);
-    Serial.print(", end:");
-    Serial.println(end);
-    Serial.print("delta:");
-    Serial.print(end - startTime);
-    loopCount = 0;
     return;
   }
 

@@ -1,13 +1,15 @@
-#include "Communication.hpp"
+#include "Communicator.hpp"
 #include "../Pins.hpp"
 #include <Arduino.h>
 #include "Message.hpp"
 #include "SerialWrapper.hpp"
 
-Communication::Communication() : _mode(RS485_UNINITIALIZED)
+using namespace Communication;
+
+Communicator::Communicator() : _mode(RS485_UNINITIALIZED)
 {}
 
-void Communication::init(int mode)
+void Communicator::init(int mode)
 {
   SerialWrapper::begin(9600);
   pinMode(PIN_RS485_READ_WRITE, OUTPUT);
@@ -17,7 +19,7 @@ void Communication::init(int mode)
 #endif
 }
 
-bool Communication::receive(Message& message)
+bool Communicator::receive(Message& message)
 {
   setMode(RS485_READ);
 
@@ -35,7 +37,7 @@ bool Communication::receive(Message& message)
   return false;
 }
 
-void Communication::setMode(int mode)
+void Communicator::setMode(int mode)
 {
   if (mode == RS485_WRITE)
   {
@@ -49,7 +51,7 @@ void Communication::setMode(int mode)
   }
 }
 
-Message Communication::decodeMessage()
+Message Communicator::decodeMessage()
 {
   uint8_t headerBuff[4] = {};
   SerialWrapper::readBytes(headerBuff, 4);
@@ -60,7 +62,7 @@ Message Communication::decodeMessage()
   return message;
 }
 
-void Communication::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t *message, size_t messageLength)
+void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t *message, size_t messageLength)
 {
   setMode(RS485_WRITE);
 

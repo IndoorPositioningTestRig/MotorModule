@@ -1,13 +1,13 @@
 #include <Arduino.h>
 #include "MotorLogic/Logic.hpp"
-#include "Communication/Communication.hpp"
+#include "Communication/Communicator.hpp"
 #include "Test/Test.hpp"
 #include "Communication/Message.hpp"
 #include "Id.hpp"
 
 static MotorLogic::Logic * logic;
 static Id* id;
-static Communication* communication;
+static Communication::Communicator* communicator;
 static TestNamespace::Test* test;
 
 void setup()
@@ -22,15 +22,15 @@ void setup()
   id = new Id();
   logic = new MotorLogic::Logic();
 
-  communication = new Communication();
-  communication->init();
+  communicator = new Communication::Communicator();
+  communicator->init();
 
   //id->putId(2);
 
   Serial.print("ID: ");
   Serial.println(id->getId());
 
-  Serial.print("Done!\nlooping...\n");
+  Serial.print("Done!\nlooping...\n\n");
 }
 
 void pidLoop()
@@ -53,8 +53,8 @@ void pidLoop()
 
 void commLoop()
 {
-  Message message;
-  bool success = communication->receive(message);
+  Communication::Message message;
+  bool success = communicator->receive(message);
   if (success)
   {
     // Message received!
@@ -72,5 +72,4 @@ void loop()
 {
   logic->loop();
   commLoop();
-  //pidLoop();
 }
