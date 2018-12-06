@@ -44,6 +44,7 @@ void Logic::message(Communication::Message msg)
 
   const char * command = jsonMsg["command"];
   String commandStr = String(command);
+  Serial.println(commandStr);
 
   // Interpet the message.
   if (commandStr == "setPoint")
