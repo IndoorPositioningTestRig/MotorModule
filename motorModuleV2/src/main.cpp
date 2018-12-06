@@ -19,6 +19,7 @@ void setup()
     ;
 #endif
   Serial.print("starting...");
+
   test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();

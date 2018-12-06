@@ -88,6 +88,13 @@ void Logic::pidLoop()
     return;
   }
 
+  if(error > 150){
+
+  } 
+  if(error < 80){
+
+  }
+
   // Control the motor based on output
   if (_output == 0)
   {
