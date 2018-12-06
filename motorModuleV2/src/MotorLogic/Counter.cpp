@@ -15,6 +15,7 @@ Counter::Counter()
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_A), []() {
     encoder->tick();
   }, CHANGE);
+  
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_B), []() {
     encoder->tick();
   }, CHANGE);
