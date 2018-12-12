@@ -57,3 +57,14 @@ size_t SerialWrapper::write(char* data) {
     return Serial.write(data);
   #endif
 }
+
+
+size_t SerialWrapper::writeFrame(uint8_t * frame) {
+  size_t length = frame[4];  
+  
+  #ifdef USE_SERIAL_1
+    return Serial1.write(frame, length);
+  #else
+    return Serial.write(frame, length);
+  #endif
+}
