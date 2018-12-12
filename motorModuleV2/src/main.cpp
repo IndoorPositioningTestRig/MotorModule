@@ -1,14 +1,13 @@
 #include <Arduino.h>
 #include "MotorLogic/Logic.hpp"
 #include "Communication/Communicator.hpp"
-#include "Test/Test.hpp"
 #include "Communication/Message.hpp"
 #include "Id.hpp"
+#include "Test/Debug.hpp"
 
 static MotorLogic::Logic *logic;
 static Id *id;
 static Communication::Communicator *communicator;
-static TestNamespace::Test *test;
 
 void setup()
 {
@@ -20,7 +19,6 @@ void setup()
 #endif
   Serial.print("starting...");
 
-  test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();
 
@@ -28,6 +26,10 @@ void setup()
   communicator->init();
 
   //id->putId(2);
+  // Test::Debug debug;
+  // debug.log(12345.12345, 12345.12345, 12345.12345);
+  // debug.print(*communicator);
+  communicator->write_c(1, 0, 3, "hoi Stefan", 10);
 
   Serial.print("ID: ");
   Serial.println(id->getId());
@@ -38,8 +40,6 @@ void setup()
 void pidLoop()
 {
   // logic->loop();
-  //test->manualPIDloop();
-  //test->teabagging();
   // bool test = false;
   // Serial.print("test: ");
   // Serial.println(test);
@@ -73,7 +73,7 @@ void commLoop()
 
 void loop()
 {
-  //pidLoop();
-  logic->loop();
+  // pidLoop();
+  // logic->loop();
   commLoop();
 }

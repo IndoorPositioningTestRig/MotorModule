@@ -3,7 +3,7 @@
 
 #include "Motor.hpp"
 #include "ForceDetector.hpp"
-#include <PID_v1.h>
+#include "../PID/PID_v2.h"
 #include "Counter.hpp"
 #include "../Communication/Message.hpp"
 

@@ -74,6 +74,8 @@ void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t
   frame[4] = messageLength + 5;
 
   memcpy(&frame[5], message, messageLength);
+  Serial.print("sending: ");
+  Serial.println((char*)frame);
   frame[messageLength + 5] = '\0';
 
   SerialWrapper::write((char *)frame);

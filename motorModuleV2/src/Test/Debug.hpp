@@ -1,6 +1,8 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
+#include "../Communication/Communicator.hpp";
+
 namespace Test {
   // Setpoint
   // Output
@@ -17,14 +19,18 @@ struct DataPoint {
 
 // 6000 / 12 = 500,
 
+#define MAX_LEN 1500
+
 class Debug {
 public:
-  Debug();
+  Debug() = default;
   ~Debug() = default;
 
-  void log(DataPoint data);
+  void log(double setpoint, double output, double encoder);
+  void print(Communication::Communicator communicator);
 private:
-  DataPoint _data[150];
+  int16_t _data[MAX_LEN];
+  unsigned int _position = 0;
 };
 
 } // namespace Test

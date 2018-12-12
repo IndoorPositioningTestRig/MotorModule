@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "Logic.hpp"
-#include <PID_v1.h>
+#include "PID/PID_v2.h"
 #include <ArduinoJson.h>
 
 using namespace MotorLogic;
@@ -18,7 +18,7 @@ Logic::Logic() : _state(STATE_IDLE),
                  _setpoint(0),
                  _output(0)
 {
-  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT);
+  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT );
 
   _forceDetector.init();
   _input = this->_counter.getCount();
@@ -87,13 +87,6 @@ void Logic::pidLoop()
     _motor.stop();
     Serial.println("END!");
     return;
-  }
-
-  if(error > 150){
-
-  } 
-  if(error < 80){
-
   }
 
   // Control the motor based on output
