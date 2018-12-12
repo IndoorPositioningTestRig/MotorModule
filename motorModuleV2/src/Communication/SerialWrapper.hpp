@@ -14,6 +14,7 @@ public:
   static size_t readBytes(char*buffer, size_t length);
   static size_t readBytes(uint8_t*buffer, size_t length);
   static size_t write(char* data);
+  static size_t writeFrame(uint8_t * frame);
 };
 
 } // namespace Communication

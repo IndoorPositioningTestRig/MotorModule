@@ -19,6 +19,7 @@ void setup()
 #endif
   Serial.print("starting...");
 
+  // test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();
 
@@ -37,22 +38,6 @@ void setup()
   Serial.print("Done!\nlooping...\n\n");
 }
 
-void pidLoop()
-{
-  // logic->loop();
-  // bool test = false;
-  // Serial.print("test: ");
-  // Serial.println(test);
-  // if (!test)
-  // {
-  //   Serial.println("in if statement");
-  // }
-  // else
-  // {
-  //   Serial.println("in else statement");
-  // }
-}
-
 void commLoop()
 {
   Communication::Message message;
@@ -66,14 +51,10 @@ void commLoop()
       logic->message(message);
     }
   }
-
-  // communication->write_c(11, 22, 33, (uint8_t*)"Hello World", 11);
-  // delay(2000);
 }
 
 void loop()
 {
-  // pidLoop();
-  // logic->loop();
+  logic->loop();
   commLoop();
 }
