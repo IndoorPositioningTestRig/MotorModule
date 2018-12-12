@@ -28,7 +28,7 @@ class PID
 	
     void SetMode(int Mode);               // * sets PID to either Manual (0) or Auto (non-0)
 
-    bool Compute();                       // * performs the PID calculation.  it should be
+    bool Compute(Test::Debug *_debug);                       // * performs the PID calculation.  it should be
                                           //   called every time loop() cycles. ON/OFF and
                                           //   calculation frequency can be set using SetMode
                                           //   SetSampleTime respectively
@@ -60,9 +60,7 @@ class PID
 	double GetKi();						  //  they were created mainly for the pid front-end,
 	double GetKd();						  // where it's important to know what is actually 
 	int GetMode();						  //  inside the PID.
-	int GetDirection();	
-    Test::Debug *_debug;
-    
+	int GetDirection();	    
 
   private:
 	void Initialize();

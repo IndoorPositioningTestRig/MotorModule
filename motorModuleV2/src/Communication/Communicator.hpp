@@ -8,6 +8,7 @@
 namespace Communication {
   
 class TYPES {
+public:
   static const uint8_t REQUEST = 1;
   static const uint8_t COMMAND = 2;
   static const uint8_t RESPONSE = 3;
@@ -19,6 +20,7 @@ public:
   void init(int mode = RS485_READ);
   bool receive(Message& message);
   void write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t * message, size_t messageLength);
+  void write_c(uint8_t sender, uint8_t target, uint8_t type, uint16_t * message, size_t messageLength);
 private:
   int _mode;
 

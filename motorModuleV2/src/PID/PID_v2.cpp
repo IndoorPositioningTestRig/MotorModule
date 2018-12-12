@@ -53,7 +53,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  *   pid Output needs to be computed.  returns true when the output is computed,
  *   false when nothing has been done.
  **********************************************************************************/
-bool PID::Compute()
+bool PID::Compute(Test::Debug *_debug)
 {
    if(!inAuto) return false;
    unsigned long now = millis();
@@ -85,7 +85,7 @@ bool PID::Compute()
 	    *myOutput = output;
 
       //logging
-    //   _debug->log(*mySetpoint, output, input);
+      _debug->log(*mySetpoint, output, input);
 
       /*Remember some variables for next time*/
       lastInput = input;

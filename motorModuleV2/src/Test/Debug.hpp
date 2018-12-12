@@ -10,16 +10,16 @@ namespace Test {
 
   // 8kb total RAM
 
-// 12 bytes
+// 6 bytes
 struct DataPoint {
-  double setpoint; // 4 b
-  double output; // 4 b
-  double encoder; // 4 b
+  uint16_t setpoint; // 4 b
+  uint16_t output; // 4 b
+  uint16_t encoder; // 4 b
 };
 
 // 6000 / 12 = 500,
 
-#define MAX_LEN 1500
+#define MAX_LEN 100
 
 class Debug {
 public:
@@ -29,7 +29,7 @@ public:
   void log(double setpoint, double output, double encoder);
   void print(Communication::Communicator communicator);
 private:
-  int16_t _data[MAX_LEN];
+  uint16_t _data[MAX_LEN];
   unsigned int _position = 0;
 };
 

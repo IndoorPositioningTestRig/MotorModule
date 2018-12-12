@@ -8,6 +8,8 @@
 static MotorLogic::Logic *logic;
 static Id *id;
 static Communication::Communicator *communicator;
+static Test::Debug *_debug;
+
 
 void setup()
 {
@@ -44,13 +46,13 @@ void commLoop()
     // Check if the arduino is the target
     if (message.target == 0 || message.target == id->getId())
     {
-      logic->message(message);
+      logic->message(message, _debug, communicator);
     }
   }
 }
 
 void loop()
 {
-  logic->loop();
+  logic->loop(_debug);
   commLoop();
 }

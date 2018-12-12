@@ -81,3 +81,25 @@ void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t
   SerialWrapper::writeFrame(frame);
   free(frame);
 }
+
+void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint16_t *message, size_t messageLength)
+{
+  setMode(RS485_WRITE);
+
+  uint8_t *frame = (uint8_t *)calloc(messageLength + 6, sizeof(uint8_t));
+  frame[0] = 0x80;
+  frame[1] = sender;
+  frame[2] = target;
+  frame[3] = type;
+  frame[4] = messageLength + 5;
+
+  memcpy(&frame[5], message, messageLength);
+  Serial.print("log lenght:");
+  Serial.println(messageLength+5);
+  Serial.print("sending: ");
+  Serial.println((char*)frame);
+  frame[messageLength + 5] = '\0';
+
+  SerialWrapper::writeFrame(frame);
+  free(frame);
+}

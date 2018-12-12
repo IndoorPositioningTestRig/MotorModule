@@ -19,14 +19,14 @@ public:
   Logic();
   explicit Logic(unsigned short speed);
   void setSpeed(unsigned short speed);
-  void loop();
+  void loop(Test::Debug *_debug);
 
   bool isForceMin();
   bool isForceMax();
 
-  void message(Communication::Message message);
+  void message(Communication::Message message, Test::Debug *_debug, Communication::Communicator *_communicator);
 private:
-  void pidLoop();
+  void pidLoop(Test::Debug *_debug);
 
   int _state;
 
@@ -41,7 +41,6 @@ private:
   ForceDetector _forceDetector;
   Motor _motor;
   Counter _counter;
-
 
   PID * _pid;
 

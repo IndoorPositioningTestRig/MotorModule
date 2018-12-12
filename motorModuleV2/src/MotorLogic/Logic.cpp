@@ -18,7 +18,7 @@ Logic::Logic() : _state(STATE_IDLE),
                  _setpoint(0),
                  _output(0)
 {
-  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT );
+  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT);
 
   _forceDetector.init();
   _input = this->_counter.getCount();
@@ -37,48 +37,63 @@ bool Logic::isForceMax()
   return _forceDetector.max;
 }
 
-void Logic::message(Communication::Message msg)
+void Logic::message(Communication::Message msg, Test::Debug *_debug, Communication::Communicator *_communicator)
 {
   StaticJsonBuffer<255> jsonBuffer;
-  JsonObject& jsonMsg = jsonBuffer.parseObject((char*)msg.data);
+  JsonObject &jsonMsg = jsonBuffer.parseObject((char *)msg.data);
 
-  const char * command = jsonMsg["command"];
+  const char *command = jsonMsg["command"];
   String commandStr = String(command);
   Serial.println(commandStr);
 
-  // Interpet the message.
-  if (commandStr == "setPoint")
+  if (msg.type == Communication::TYPES::COMMAND)
   {
-    int value = jsonMsg["point"];
-    _setpoint = value;
-    _state = STATE_IDLE;
-  }
-  else if (commandStr == "retract") {
-    int amount = jsonMsg["amount"];
-    int speed = jsonMsg["speed"];
-    _motor.retract(speed);
-    delay(amount);
-    _motor.stop();
-  }
-  else if (commandStr == "feed") {
-    int amount = jsonMsg["amount"];
-    int speed = jsonMsg["speed"];
-    _motor.feed(speed);
-    delay(amount);
-    _motor.stop();
-  }
-  else if (commandStr == "execute") {
-    _state = STATE_PID;
-  }
-  else if (commandStr == "resetEncoder") {
-    _counter.reset();
+    // Interpet the message.
+    if (commandStr == "setPoint")
+    {
+      int value = jsonMsg["point"];
+      _setpoint = value;
+      _state = STATE_IDLE;
+    }
+    else if (commandStr == "retract")
+    {
+      int amount = jsonMsg["amount"];
+      int speed = jsonMsg["speed"];
+      _motor.retract(speed);
+      delay(amount);
+      _motor.stop();
+    }
+    else if (commandStr == "feed")
+    {
+      int amount = jsonMsg["amount"];
+      int speed = jsonMsg["speed"];
+      _motor.feed(speed);
+      delay(amount);
+      _motor.stop();
+    }
+    else if (commandStr == "execute")
+    {
+      _state = STATE_PID;
+    }
+    else if (commandStr == "resetEncoder")
+    {
+      _counter.reset();
+    }
+  } else if (msg.type == Communication::TYPES::REQUEST){
+    if (commandStr == "debug")
+    {
+      Serial.println("printing log...");
+      delay(2000);
+      _debug->print(*_communicator);
+    }
+    
   }
 }
 
-void Logic::pidLoop()
+void Logic::pidLoop(Test::Debug *_debug)
 {
   double error = abs(_setpoint - _input);
-  _pid->Compute();
+  _pid->Compute(_debug);
 
   setSpeed(abs(_output));
   if (abs(error) < ERROR_MARGIN && abs(_output) < OUTPUT_MARGIN)
@@ -104,11 +119,11 @@ void Logic::pidLoop()
   }
 }
 
-void Logic::loop()
+void Logic::loop(Test::Debug *_debug)
 {
   _input = _counter.getCount();
   if (_state == STATE_PID)
   {
-    pidLoop();
+    pidLoop(_debug);
   }
 }
