@@ -27,10 +27,6 @@ void setup()
   communicator->init();
 
   //id->putId(2);
-  // Test::Debug debug;
-  // debug.log(12345.12345, 12345.12345, 12345.12345);
-  // debug.print(*communicator);
-  communicator->write_c(1, 0, 3, "hoi Stefan", 10);
 
   Serial.print("ID: ");
   Serial.println(id->getId());
