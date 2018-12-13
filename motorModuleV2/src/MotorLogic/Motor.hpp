@@ -13,7 +13,8 @@ enum MotorState
 class Motor
 {
 public:
-  Motor();
+  Motor() = default;
+  void init();
 
   void retract(unsigned short speed);
   void feed(unsigned short speed);

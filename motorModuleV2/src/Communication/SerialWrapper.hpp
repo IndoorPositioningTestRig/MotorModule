@@ -13,8 +13,8 @@ public:
   static int read();
   static size_t readBytes(char*buffer, size_t length);
   static size_t readBytes(uint8_t*buffer, size_t length);
-  static size_t write(char* data);
-  static size_t writeFrame(uint8_t * frame);
+  static size_t write(char* data, bool flush=true);
+  static size_t writeFrame(uint8_t * frame, bool flush=true);
 };
 
 } // namespace Communication

@@ -1,11 +1,10 @@
 #include <Arduino.h>
 #include "Logic.hpp"
 #include "PID/PID_v2.h"
-#include <ArduinoJson.h>
 
 using namespace MotorLogic;
 
-void Logic::setSpeed(unsigned short speed)
+void Logic::setSpeed(uint8_t speed)
 {
   _speed = speed;
 }
@@ -16,15 +15,19 @@ Logic::Logic() : _state(STATE_IDLE),
                  _i(0.5),
                  _d(1),
                  _setpoint(0),
-                 _output(0)
+                 _output(0),
+                 _input(0)
 {
   _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT);
-
-  _forceDetector.init();
-  _input = this->_counter.getCount();
-
   _pid->SetMode(AUTOMATIC);
   _pid->SetOutputLimits(-255, 255);
+}
+
+void Logic::init() {
+  _motor.init();
+  _counter.init();
+  _input = _counter.getCount();
+  _forceDetector.init();
 }
 
 bool Logic::isForceMin()
@@ -37,14 +40,12 @@ bool Logic::isForceMax()
   return _forceDetector.max;
 }
 
-void Logic::message(Communication::Message msg, Communication::Communicator *_communicator)
+void Logic::message(Communication::Message msg)
 {
-  StaticJsonBuffer<255> jsonBuffer;
-  JsonObject &jsonMsg = jsonBuffer.parseObject((char *)msg.data);
+  JsonObject& jsonMsg = _jsonBuffer.parseObject((char*)msg.data);
 
   const char *command = jsonMsg["command"];
   String commandStr = String(command);
-  //Serial.println(commandStr);
 
   if (msg.type == Communication::TYPES::COMMAND)
   {
@@ -84,7 +85,7 @@ void Logic::message(Communication::Message msg, Communication::Communicator *_co
     {
       //Serial.println("printing log...");
       delay(2000);
-      _communicator->write_c(1, 0, 2, (uint8_t*)"{\"command\":\"kutrs485\"}", 22);
+      //_communicator->write_c(1, 0, 2, (uint8_t*)"{\"command\":\"kutrs485\"}", 22);
 
       // _debug->print(*_communicator);
     }
@@ -102,7 +103,6 @@ void Logic::pidLoop()
   {
     _state = STATE_IDLE;
     _motor.stop();
-    // Serial.println("END!");
     return;
   }
 

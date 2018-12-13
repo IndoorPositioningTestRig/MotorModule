@@ -9,11 +9,13 @@ namespace MotorLogic
 class Counter
 {
 public:
-  Counter();
+  Counter() = default;
+
+  void init();
   long getCount();
   void reset();
-  static RotaryEncoder *encoder;
 
+  static RotaryEncoder *encoder;
 private:
 };
 } // namespace MotorLogic

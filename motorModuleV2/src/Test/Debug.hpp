@@ -1,7 +1,7 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#include "../Communication/Communicator.hpp";
+#include "../Communication/Communicator.hpp"
 
 namespace Test {
   // Setpoint
@@ -19,7 +19,7 @@ struct DataPoint {
 
 // 6000 / 12 = 500,
 
-#define MAX_LEN 100
+#define MAX_LEN 1
 
 class Debug {
 public:
