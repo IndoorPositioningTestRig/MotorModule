@@ -11,7 +11,7 @@ Counter::Counter()
 {
   encoder = new RotaryEncoder(PIN_ENCODER_A, PIN_ENCODER_B);
 
-  delay(500);
+  //delay(500);
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_A), []() {
     encoder->tick();
   }, CHANGE);
@@ -19,9 +19,7 @@ Counter::Counter()
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_B), []() {
     encoder->tick();
   }, CHANGE);
-  delay(500);
-
-  Serial.println("Encoder initialized");
+  //delay(500);
 }
 
 long Counter::getCount()

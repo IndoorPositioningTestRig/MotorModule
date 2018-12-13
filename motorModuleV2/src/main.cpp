@@ -5,10 +5,10 @@
 #include "Id.hpp"
 #include "Test/Debug.hpp"
 
-static MotorLogic::Logic *logic;
-static Id *id;
-static Communication::Communicator *communicator;
-static Test::Debug *_debug;
+MotorLogic::Logic *logic = nullptr;
+Id *id = nullptr;
+Communication::Communicator *communicator = nullptr;
+//  Test::Debug *_debug = nullptr;
 
 
 void setup()
@@ -19,21 +19,26 @@ void setup()
   while (!Serial)
     ;
 #endif
-  Serial.print("starting...");
+  //Serial.print("starting...");
 
-  // test = new TestNamespace::Test();
   id = new Id();
   logic = new MotorLogic::Logic();
 
   communicator = new Communication::Communicator();
   communicator->init();
 
-  //id->putId(2);
 
-  Serial.print("ID: ");
-  Serial.println(id->getId());
+  // id->putId(2);
 
-  Serial.print("Done!\nlooping...\n\n");
+  // Serial.print("ID: ");
+  // Serial.println(id->getId());
+
+
+  //Serial.println("RS485 test print");
+  communicator->write_c(1, 0, 2, (uint8_t*)"{\"command\":\"test\"}", 18);
+
+
+  // Serial.print("Done!\nlooping...\n\n");
 }
 
 void commLoop()
@@ -46,13 +51,14 @@ void commLoop()
     // Check if the arduino is the target
     if (message.target == 0 || message.target == id->getId())
     {
-      logic->message(message, _debug, communicator);
+      logic->message(message, communicator);
     }
   }
 }
 
 void loop()
 {
-  logic->loop(_debug);
-  commLoop();
+  // logic->loop();
+  // commLoop();
+  delay(100);
 }

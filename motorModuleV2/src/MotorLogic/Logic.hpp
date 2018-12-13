@@ -19,14 +19,14 @@ public:
   Logic();
   explicit Logic(unsigned short speed);
   void setSpeed(unsigned short speed);
-  void loop(Test::Debug *_debug);
+  void loop();
 
   bool isForceMin();
   bool isForceMax();
 
-  void message(Communication::Message message, Test::Debug *_debug, Communication::Communicator *_communicator);
+  void message(Communication::Message message, Communication::Communicator *_communicator);
 private:
-  void pidLoop(Test::Debug *_debug);
+  void pidLoop();
 
   int _state;
 

@@ -12,9 +12,9 @@ void Debug::log(double setpoint, double output, double encoder) {
  }
 }
 
-void Debug::print(Communication::Communicator communicator){
+void Debug::print(Communication::Communicator * communicator){
         //communicator.write_c(1, 0, 3, _data, _position*2*3);
-    communicator.write_c(1, 0, 3, (uint8_t*)"hello world", 15);
+    communicator->write_c(1, 0, 2, (uint8_t*)"{\"command\":\"kutrs485\"}", 22);
 
     // for(int i = 0; i < _position; i++){
     //     communicator.write_c(1, 0, 3, _data, 10);

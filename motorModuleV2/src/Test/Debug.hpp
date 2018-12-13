@@ -27,7 +27,7 @@ public:
   ~Debug() = default;
 
   void log(double setpoint, double output, double encoder);
-  void print(Communication::Communicator communicator);
+  void print(Communication::Communicator * communicator);
 private:
   uint16_t _data[MAX_LEN];
   unsigned int _position = 0;
