@@ -6,7 +6,8 @@
 
 using namespace Communication;
 
-Communicator::Communicator() : _mode(RS485_UNINITIALIZED)
+Communicator::Communicator() :
+  _mode(RS485_UNINITIALIZED)
 {}
 
 void Communicator::init(int mode)
@@ -26,6 +27,8 @@ bool Communicator::receive(Message& message)
   while (SerialWrapper::available())
   {
     byte input = SerialWrapper::read();
+    // Serial.print('read');
+    // Serial.println(input);
     if (input == 0x80)
     {
       Message recMessage = decodeMessage();
@@ -62,7 +65,7 @@ Message Communicator::decodeMessage()
   return message;
 }
 
-void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t *message, size_t messageLength)
+void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, const uint8_t *message, size_t messageLength)
 {
   setMode(RS485_WRITE);
 
@@ -74,10 +77,13 @@ void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, uint8_t
   frame[4] = messageLength + 5;
 
   memcpy(&frame[5], message, messageLength);
-  Serial.print("sending: ");
-  Serial.println((char*)frame);
   frame[messageLength + 5] = '\0';
 
   SerialWrapper::writeFrame(frame);
   free(frame);
 }
+
+void Communicator::write_c(uint8_t sender, uint8_t target, uint8_t type, const char * message, size_t messageLength) {
+  write_c(sender, target, type, (const uint8_t*)message, messageLength);
+}
+

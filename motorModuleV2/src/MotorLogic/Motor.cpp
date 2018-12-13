@@ -4,8 +4,7 @@
 
 using namespace MotorLogic;
 
-Motor::Motor()
-{
+void Motor::init() {
   pinMode(PIN_MOTOR_PWM, OUTPUT);
   pinMode(PIN_MOTOR_CLOCKWISE, OUTPUT);
   pinMode(PIN_MOTOR_COUNTER_CLOCKWISE, OUTPUT);

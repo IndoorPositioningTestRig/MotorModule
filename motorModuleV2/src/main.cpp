@@ -5,9 +5,9 @@
 #include "Id.hpp"
 #include "Test/Debug.hpp"
 
-static MotorLogic::Logic *logic;
-static Id *id;
-static Communication::Communicator *communicator;
+MotorLogic::Logic logic;
+Id id;
+Communication::Communicator communicator;
 
 void setup()
 {
@@ -17,40 +17,31 @@ void setup()
   while (!Serial)
     ;
 #endif
-  Serial.print("starting...");
 
-  // test = new TestNamespace::Test();
-  id = new Id();
-  logic = new MotorLogic::Logic();
+  logic.init();
+  communicator.init();
 
-  communicator = new Communication::Communicator();
-  communicator->init();
 
-  //id->putId(2);
-
-  Serial.print("ID: ");
-  Serial.println(id->getId());
-
-  Serial.print("Done!\nlooping...\n\n");
+  communicator.write_c(1, 0, 2, (uint8_t*)"{\"command\":\"test\"}", 18);
 }
 
 void commLoop()
 {
   Communication::Message message;
-  bool success = communicator->receive(message);
+  bool success = communicator.receive(message);
   if (success)
   {
     // Message received!
     // Check if the arduino is the target
-    if (message.target == 0 || message.target == id->getId())
+    if (message.target == 0 || message.target == id.getId())
     {
-      logic->message(message);
+      logic.message(message);
     }
   }
 }
 
 void loop()
 {
-  logic->loop();
-  commLoop();
+  logic.loop();
+  commLoop(); 
 }

@@ -50,21 +50,37 @@ size_t SerialWrapper::readBytes(uint8_t*buffer, size_t length) {
   #endif
 }
 
-size_t SerialWrapper::write(char* data) {
+size_t SerialWrapper::write(char* data, bool flush) {
   #ifdef USE_SERIAL_1
-    return Serial1.write(data);
+    size_t ret = Serial1.write(data);
+    if (flush) {
+      Serial1.flush();
+    }
+    return 
   #else
-    return Serial.write(data);
+    size_t ret = Serial.write(data);
+    if (flush) {
+      Serial.flush();
+    }
+    return ret;
   #endif
 }
 
 
-size_t SerialWrapper::writeFrame(uint8_t * frame) {
+size_t SerialWrapper::writeFrame(uint8_t * frame, bool flush) {
   size_t length = frame[4];  
   
   #ifdef USE_SERIAL_1
-    return Serial1.write(frame, length);
+    size_t ret = Serial1.write(frame, length);
+    if (flush) {
+      Serial1.flush();
+    }
+    return ret;
   #else
-    return Serial.write(frame, length);
+    size_t ret = Serial.write(frame, length);
+    if (flush) {
+      Serial.flush();
+    }
+    return ret;
   #endif
 }

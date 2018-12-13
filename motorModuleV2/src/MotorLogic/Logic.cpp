@@ -1,11 +1,10 @@
 #include <Arduino.h>
 #include "Logic.hpp"
 #include "PID/PID_v2.h"
-#include <ArduinoJson.h>
 
 using namespace MotorLogic;
 
-void Logic::setSpeed(unsigned short speed)
+void Logic::setSpeed(uint8_t speed)
 {
   _speed = speed;
 }
@@ -16,15 +15,19 @@ Logic::Logic() : _state(STATE_IDLE),
                  _i(0.5),
                  _d(1),
                  _setpoint(0),
-                 _output(0)
+                 _output(0),
+                 _input(0)
 {
-  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT );
-
-  _forceDetector.init();
-  _input = this->_counter.getCount();
-
+  _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT);
   _pid->SetMode(AUTOMATIC);
   _pid->SetOutputLimits(-255, 255);
+}
+
+void Logic::init() {
+  _motor.init();
+  _counter.init();
+  _input = _counter.getCount();
+  _forceDetector.init();
 }
 
 bool Logic::isForceMin()
@@ -39,12 +42,10 @@ bool Logic::isForceMax()
 
 void Logic::message(Communication::Message msg)
 {
-  StaticJsonBuffer<255> jsonBuffer;
-  JsonObject& jsonMsg = jsonBuffer.parseObject((char*)msg.data);
+  JsonObject& jsonMsg = _jsonBuffer.parseObject((char*)msg.data);
 
   const char * command = jsonMsg["command"];
   String commandStr = String(command);
-  Serial.println(commandStr);
 
   // Interpet the message.
   if (commandStr == "setPoint")
@@ -85,7 +86,6 @@ void Logic::pidLoop()
   {
     _state = STATE_IDLE;
     _motor.stop();
-    Serial.println("END!");
     return;
   }
 

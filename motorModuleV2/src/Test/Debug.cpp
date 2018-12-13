@@ -12,8 +12,6 @@ void Debug::log(double setpoint, double output, double encoder) {
  }
 }
 
-void Debug::print(Communication::Communicator communicator){
-    for(int i = 0; i < _position; i++){
-        communicator.write_c(1, 0, 3, "hoi Stefan", 10);
-    }
+void Debug::print(Communication::Communicator * communicator){
+  communicator->write_c(1, 0, 3, "hoi Stefan", 10);
 }

@@ -6,19 +6,22 @@
 #include "../PID/PID_v2.h"
 #include "Counter.hpp"
 #include "../Communication/Message.hpp"
+#include <ArduinoJson.h>
 
 namespace MotorLogic
 {
 
-static const int STATE_IDLE = 0;
-static const int STATE_PID = 1;
+static const uint8_t STATE_IDLE = 0;
+static const uint8_t STATE_PID = 1;
 
 class Logic
 {
 public:
   Logic();
-  explicit Logic(unsigned short speed);
-  void setSpeed(unsigned short speed);
+  explicit Logic(uint8_t speed);
+
+  void init();
+  void setSpeed(uint8_t speed);
   void loop();
 
   bool isForceMin();
@@ -28,9 +31,9 @@ public:
 private:
   void pidLoop();
 
-  int _state;
+  uint8_t _state;
 
-  unsigned short _speed;
+  uint8_t _speed;
   double _p;
   double _i;
   double _d;
@@ -42,8 +45,8 @@ private:
   Motor _motor;
   Counter _counter;
 
-
   PID * _pid;
+  StaticJsonBuffer<255> _jsonBuffer;
 
   constexpr static double ERROR_MARGIN = 10;
   constexpr static double OUTPUT_MARGIN = 20;

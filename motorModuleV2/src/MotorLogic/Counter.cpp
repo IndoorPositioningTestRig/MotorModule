@@ -7,8 +7,7 @@ using namespace MotorLogic;
 
 RotaryEncoder *Counter::encoder = nullptr;
 
-Counter::Counter()
-{
+void Counter::init() {
   encoder = new RotaryEncoder(PIN_ENCODER_A, PIN_ENCODER_B);
 
   delay(500);
@@ -19,17 +18,21 @@ Counter::Counter()
   attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_B), []() {
     encoder->tick();
   }, CHANGE);
-  delay(500);
-
-  Serial.println("Encoder initialized");
+  delay(500); 
 }
 
 long Counter::getCount()
 {
+  if (encoder == nullptr) {
+    init();
+  }
   return encoder->getPosition();
 }
 
 void Counter::reset()
 {
+  if (encoder == nullptr) {
+    init();
+  }
   encoder->setPosition(0);
 }
