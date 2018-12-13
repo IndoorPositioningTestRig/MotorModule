@@ -22,14 +22,14 @@ public:
 
   void init();
   void setSpeed(uint8_t speed);
-  void loop();
+  void loop(Test::Debug * debug);
 
   bool isForceMin();
   bool isForceMax();
 
-  void message(Communication::Message message);
+  void message(Communication::Message message, Communication::Communicator * communicator, Test::Debug * debug);
 private:
-  void pidLoop();
+  void pidLoop(Test::Debug * debug);
 
   uint8_t _state;
 

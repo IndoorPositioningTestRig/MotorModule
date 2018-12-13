@@ -40,12 +40,17 @@ bool Logic::isForceMax()
   return _forceDetector.max;
 }
 
-void Logic::message(Communication::Message msg)
+void Logic::message(Communication::Message msg, Communication::Communicator * communicator, Test::Debug * debug)
 {
+  Serial.println("Logic message");
   JsonObject& jsonMsg = _jsonBuffer.parseObject((char*)msg.data);
 
   const char *command = jsonMsg["command"];
   String commandStr = String(command);
+  Serial.print("command string: ");
+  Serial.println(commandStr);
+  Serial.print("type: ");
+  Serial.println(msg.type);
 
   if (msg.type == Communication::TYPES::COMMAND)
   {
@@ -83,20 +88,19 @@ void Logic::message(Communication::Message msg)
   } else if (msg.type == Communication::TYPES::REQUEST){
     if (commandStr == "debug")
     {
-      //Serial.println("printing log...");
-      delay(2000);
-      //_communicator->write_c(1, 0, 2, (uint8_t*)"{\"command\":\"kutrs485\"}", 22);
-
-      // _debug->print(*_communicator);
+      delay(500);
+      debug->print(communicator);
     }
     
   }
+
+  _jsonBuffer.clear();
 }
 
-void Logic::pidLoop()
+void Logic::pidLoop(Test::Debug * debug)
 {
   double error = abs(_setpoint - _input);
-  _pid->Compute();
+  _pid->Compute(debug);
 
   setSpeed(abs(_output));
   if (abs(error) < ERROR_MARGIN && abs(_output) < OUTPUT_MARGIN)
@@ -120,12 +124,12 @@ void Logic::pidLoop()
     _motor.retract(_speed);
   }
 }
-
-void Logic::loop()
+int i = 0;
+void Logic::loop(Test::Debug * debug)
 {
-  // _input = _counter.getCount();
+  _input = _counter.getCount();
   if (_state == STATE_PID)
   {
-    pidLoop();
+    pidLoop(debug);
   }
 }

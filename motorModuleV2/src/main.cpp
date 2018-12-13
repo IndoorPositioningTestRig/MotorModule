@@ -8,6 +8,7 @@
 MotorLogic::Logic logic;
 Id id;
 Communication::Communicator communicator;
+Test::Debug debug;
 
 void setup()
 {
@@ -22,7 +23,7 @@ void setup()
   communicator.init();
 
 
-  communicator.write_c(1, 0, 2, (uint8_t*)"{\"command\":\"test\"}", 18);
+  //communicator.write_c(1, 0, 2, (uint8_t*)"{\"command\":\"test\"}", 18);
 }
 
 void commLoop()
@@ -31,17 +32,18 @@ void commLoop()
   bool success = communicator.receive(message);
   if (success)
   {
+    //Serial.println("message received");
     // Message received!
     // Check if the arduino is the target
     if (message.target == 0 || message.target == id.getId())
     {
-      logic.message(message);
+      logic.message(message, &communicator, &debug);
     }
   }
 }
 
 void loop()
 {
-  logic.loop();
+  logic.loop(&debug);
   commLoop(); 
 }

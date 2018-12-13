@@ -53,7 +53,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  *   pid Output needs to be computed.  returns true when the output is computed,
  *   false when nothing has been done.
  **********************************************************************************/
-bool PID::Compute()
+bool PID::Compute(Test::Debug * debug)
 {
    if(!inAuto) return false;
    unsigned long now = millis();
@@ -83,7 +83,9 @@ bool PID::Compute()
 	    if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
 	    *myOutput = output;
-       
+
+      //logging
+      debug->log(*mySetpoint, output, input, timeChange);
       /*Remember some variables for next time*/
       lastInput = input;
       lastTime = now;

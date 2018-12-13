@@ -22,6 +22,7 @@ public:
 
   void write_c(uint8_t sender, uint8_t target, uint8_t type, const char * message, size_t messageLength);
   void write_c(uint8_t sender, uint8_t target, uint8_t type, const uint8_t * message, size_t messageLength);
+  void write_c(uint8_t sender, uint8_t target, uint8_t type, const int16_t * message, size_t messageLength);
 private:
   int _mode;
 

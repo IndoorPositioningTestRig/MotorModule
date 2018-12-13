@@ -70,10 +70,6 @@ void RotaryEncoder::tick(void)
 {
   int sig1 = digitalRead(_pin1);
   int sig2 = digitalRead(_pin2);
-  // Serial.print("sig1");
-  // Serial.println(sig1);
-  // Serial.print("sig2");
-  // Serial.println(sig2);
   
   int8_t thisState = sig1 | (sig2 << 1);
 
@@ -84,5 +80,5 @@ void RotaryEncoder::tick(void)
       _positionExt = _position >> 2;
     
     _oldState = thisState;
-  } // if
-} // tick()
+  }
+} 
