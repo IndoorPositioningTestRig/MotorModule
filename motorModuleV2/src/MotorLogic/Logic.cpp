@@ -9,7 +9,8 @@ void Logic::setSpeed(uint8_t speed)
   _speed = speed;
 }
 
-Logic::Logic() : _state(STATE_IDLE),
+Logic::Logic() : _reportDone(false),
+                 _state(STATE_IDLE),
                  _speed(255),
                  _p(4),
                  _i(0.5),
@@ -52,47 +53,55 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
   Serial.print("type: ");
   Serial.println(msg.type);
 
-  if (msg.type == Communication::TYPES::COMMAND)
+  if (commandStr == "setPoint")
   {
-    // Interpet the message.
-    if (commandStr == "setPoint")
-    {
-      int value = jsonMsg["point"];
-      _setpoint = value;
-      _state = STATE_IDLE;
-    }
-    else if (commandStr == "retract")
-    {
-      int amount = jsonMsg["amount"];
-      int speed = jsonMsg["speed"];
-      _motor.retract(speed);
-      delay(amount);
-      _motor.stop();
-    }
-    else if (commandStr == "feed")
-    {
-      int amount = jsonMsg["amount"];
-      int speed = jsonMsg["speed"];
-      _motor.feed(speed);
-      delay(amount);
-      _motor.stop();
-    }
-    else if (commandStr == "execute")
-    {
-      _state = STATE_PID;
-    }
-    else if (commandStr == "resetEncoder")
-    {
-      _counter.reset();
-    }
-  } else if (msg.type == Communication::TYPES::REQUEST){
-    if (commandStr == "debug")
-    {
-      delay(500);
-      debug->print(communicator);
-    }
-    
+    // Set the setPoint value
+    int value = jsonMsg["point"];
+    _setpoint = value;
+    _state = STATE_IDLE;
   }
+  else if (commandStr == "retract")
+  {
+    // Retract some distance
+    int amount = jsonMsg["amount"];
+    int speed = jsonMsg["speed"];
+    _motor.retract(speed);
+    delay(amount);
+    _motor.stop();
+  }
+  else if (commandStr == "feed")
+  {
+    // Feed some distance
+    int amount = jsonMsg["amount"];
+    int speed = jsonMsg["speed"];
+    _motor.feed(speed);
+    delay(amount);
+    _motor.stop();
+  }
+  else if (commandStr == "execute")
+  {
+    // Execute movement to setPont
+    _reportDone = false;
+    _state = STATE_PID;
+  }
+  else if (commandStr == "resetEncoder")
+  {
+    // Reset the encoder
+    _counter.reset();
+  }
+  else if (commandStr == "debug")
+  {
+    // Send debug data
+    delay(500);
+    debug->print();
+  }
+  else if (commandStr == "setPoint_debug") {
+    // Move to setpoint and send debug data when done.
+    int value = jsonMsg["setpoint"];
+    _setpoint = value;
+    _state = STATE_PID;
+    _reportDone = true;
+  } 
 
   _jsonBuffer.clear();
 }
@@ -107,6 +116,9 @@ void Logic::pidLoop(Test::Debug * debug)
   {
     _state = STATE_IDLE;
     _motor.stop();
+    if (_reportDone) {
+      debug->print();
+    }
     return;
   }
 

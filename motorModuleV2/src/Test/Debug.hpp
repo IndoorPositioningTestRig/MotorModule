@@ -4,32 +4,31 @@
 #include "../Communication/Communicator.hpp"
 
 namespace Test {
-  // Setpoint
-  // Output
-  // Encoder value
-
   // 8kb total RAM
+  // Keeping 2kb for other stuff, leaves us with 6kb
 
-// 6 bytes
+// 8 bytes
 struct DataPoint {
-  int16_t setpoint; // 4 b
-  int16_t output; // 4 b
-  int16_t encoder; // 4 b
-  int16_t deltatime; //ms
+  int16_t setpoint; // 2 b
+  int16_t output; // 2 b
+  int16_t encoder; // 2 b
+  int16_t deltatime; //ms 2b
 };
 
-// 6000 / 12 = 500,
-
-#define MAX_LEN 100
+// 6000 / 8 = 750 maximum datapoints
+// 750 * 4 = 3000 needed length.
+#define MAX_LEN 3000
 
 class Debug {
 public:
-  Debug() = default;
+  Debug(Communication::Communicator * communicator);
   ~Debug() = default;
 
   void log(double setpoint, double output, double encoder, long deltatime);
-  void print(Communication::Communicator * communicator);
+  void print();
 private:
+  Communication::Communicator * _communicator;
+
   int16_t _data[MAX_LEN];
   unsigned int _position = 0;
 };

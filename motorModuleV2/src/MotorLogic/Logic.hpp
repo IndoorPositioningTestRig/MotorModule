@@ -31,6 +31,8 @@ public:
 private:
   void pidLoop(Test::Debug * debug);
 
+  bool _reportDone;
+
   uint8_t _state;
 
   uint8_t _speed;

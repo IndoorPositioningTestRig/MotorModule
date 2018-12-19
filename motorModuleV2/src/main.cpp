@@ -8,7 +8,7 @@
 MotorLogic::Logic logic;
 Id id;
 Communication::Communicator communicator;
-Test::Debug debug;
+Test::Debug debug(&communicator);
 
 void setup()
 {
