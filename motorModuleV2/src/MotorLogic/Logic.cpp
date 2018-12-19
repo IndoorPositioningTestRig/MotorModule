@@ -136,7 +136,7 @@ void Logic::pidLoop(Test::Debug * debug)
     _motor.retract(_speed);
   }
 }
-int i = 0;
+
 void Logic::loop(Test::Debug * debug)
 {
   _input = _counter.getCount();

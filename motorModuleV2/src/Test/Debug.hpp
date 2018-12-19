@@ -4,8 +4,8 @@
 #include "../Communication/Communicator.hpp"
 
 namespace Test {
-  // 8kb total RAM
-  // Keeping 2kb for other stuff, leaves us with 6kb
+// 8kb total RAM
+// Keeping 2kb for other stuff, leaves us with 6kb
 
 // 8 bytes
 struct DataPoint {
