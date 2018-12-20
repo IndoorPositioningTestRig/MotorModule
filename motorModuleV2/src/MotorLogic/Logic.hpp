@@ -7,6 +7,7 @@
 #include "Counter.hpp"
 #include "../Communication/Message.hpp"
 #include <ArduinoJson.h>
+#include "HallSensor.hpp"
 
 namespace MotorLogic
 {
@@ -44,8 +45,9 @@ private:
   double _input;
   
   ForceDetector _forceDetector;
-  Motor _motor;
+  HallSensor _hallSensor;
   Counter _counter;
+  Motor _motor;
 
   PID * _pid;
   StaticJsonBuffer<255> _jsonBuffer;

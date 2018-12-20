@@ -18,16 +18,10 @@ void setup()
   while (!Serial)
     ;
 #endif
-  Serial.print("double: ");
-  double x = 24142.12412;
-  Serial.println(sizeof x);
-
+  id.putId(1);
 
   logic.init();
   communicator.init();
-
-
-  //communicator.write_c(1, 0, 2, (uint8_t*)"{\"command\":\"test\"}", 18);
 }
 
 void commLoop()

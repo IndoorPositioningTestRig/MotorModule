@@ -25,7 +25,8 @@ Logic::Logic() : _reportDone(false),
 }
 
 void Logic::init() {
-  _motor.init();
+  _hallSensor.init();
+  _motor.init(&_hallSensor);
   _counter.init();
   _input = _counter.getCount();
   _forceDetector.init();
@@ -62,7 +63,7 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
     }
     else if (commandStr == "setPoint_debug") {
       // Move to setpoint and send debug data when done.
-      int value = jsonMsg["setpoint"];
+      double value = jsonMsg["setpoint"];
       _setpoint = value;
       _state = STATE_PID;
       _reportDone = true;
@@ -127,15 +128,23 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
 
 void Logic::pidLoop(Test::Debug * debug)
 {
+  if (_hallSensor.isActive()) {
+    _motor.stop();
+    _state = STATE_IDLE;
+    return;
+  }
+
   double error = abs(_setpoint - _input);
   _pid->Compute(debug);
-
   setSpeed(abs(_output));
+
+  // Check if the error or output are within margin and end the loop is if one is.
   if (abs(error) < ERROR_MARGIN && abs(_output) < OUTPUT_MARGIN)
   {
     _state = STATE_IDLE;
     _motor.stop();
     if (_reportDone) {
+      debug->log(_setpoint, _output, _input, 100);
       debug->print();
     }
     return;

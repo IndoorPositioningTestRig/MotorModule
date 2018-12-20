@@ -32,5 +32,6 @@ const int RS485_READ = HIGH;
 const int RS485_WRITE = LOW;
 const int RS485_UNINITIALIZED = -1;
 
+const int HALL_SENSOR = 21;
 
 #endif // PINS_HPP
