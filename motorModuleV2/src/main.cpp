@@ -18,6 +18,10 @@ void setup()
   while (!Serial)
     ;
 #endif
+  Serial.print("double: ");
+  double x = 24142.12412;
+  Serial.println(sizeof x);
+
 
   logic.init();
   communicator.init();

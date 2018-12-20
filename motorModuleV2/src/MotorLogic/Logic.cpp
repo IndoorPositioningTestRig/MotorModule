@@ -53,55 +53,74 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
   Serial.print("type: ");
   Serial.println(msg.type);
 
-  if (commandStr == "setPoint")
-  {
-    // Set the setPoint value
-    int value = jsonMsg["point"];
-    _setpoint = value;
-    _state = STATE_IDLE;
+  if (msg.type == Communication::TYPES::REQUEST) {
+    // Handle requests
+    if (commandStr == "get_pid") {
+      delay(500);
+      double pid[3] = {_p, _i, _d};
+      communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, pid, 3 * 4);
+    }
+    else if (commandStr == "setPoint_debug") {
+      // Move to setpoint and send debug data when done.
+      int value = jsonMsg["setpoint"];
+      _setpoint = value;
+      _state = STATE_PID;
+      _reportDone = true;
+    } else if (commandStr == "ping") {
+        _jsonBuffer.clear();
+        communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"ping\"}", 18);
+    }
+  } else {
+    // Handle other message types
+    if (commandStr == "setPoint")
+    {
+      // Set the setPoint value
+      int value = jsonMsg["point"];
+      _setpoint = value;
+      _state = STATE_IDLE;
+    }
+    else if (commandStr == "retract")
+    {
+      // Retract some distance
+      int amount = jsonMsg["amount"];
+      int speed = jsonMsg["speed"];
+      _motor.retract(speed);
+      delay(amount);
+      _motor.stop();
+    }
+    else if (commandStr == "feed")
+    {
+      // Feed some distance
+      int amount = jsonMsg["amount"];
+      int speed = jsonMsg["speed"];
+      _motor.feed(speed);
+      delay(amount);
+      _motor.stop();
+    }
+    else if (commandStr == "execute")
+    {
+      // Execute movement to setPont
+      _reportDone = false;
+      _state = STATE_PID;
+    }
+    else if (commandStr == "resetEncoder")
+    {
+      // Reset the encoder
+      _counter.reset();
+    }
+    else if (commandStr == "debug")
+    {
+      // Send debug data
+      delay(500);
+      debug->print();
+    }
+    else if (commandStr == "set_pid")
+    {
+      _p = jsonMsg["p"];
+      _i = jsonMsg["i"];
+      _d = jsonMsg["d"];
+    }
   }
-  else if (commandStr == "retract")
-  {
-    // Retract some distance
-    int amount = jsonMsg["amount"];
-    int speed = jsonMsg["speed"];
-    _motor.retract(speed);
-    delay(amount);
-    _motor.stop();
-  }
-  else if (commandStr == "feed")
-  {
-    // Feed some distance
-    int amount = jsonMsg["amount"];
-    int speed = jsonMsg["speed"];
-    _motor.feed(speed);
-    delay(amount);
-    _motor.stop();
-  }
-  else if (commandStr == "execute")
-  {
-    // Execute movement to setPont
-    _reportDone = false;
-    _state = STATE_PID;
-  }
-  else if (commandStr == "resetEncoder")
-  {
-    // Reset the encoder
-    _counter.reset();
-  }
-  else if (commandStr == "debug")
-  {
-    // Send debug data
-    delay(500);
-    debug->print();
-  }
-  else if (commandStr == "setPoint_debug") {
-    // Move to setpoint and send debug data when done.
-    int value = jsonMsg["setpoint"];
-    _setpoint = value;
-    _state = STATE_PID;
-    _reportDone = true;
-  } 
 
   _jsonBuffer.clear();
 }
