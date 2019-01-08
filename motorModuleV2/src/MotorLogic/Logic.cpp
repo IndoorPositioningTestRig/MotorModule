@@ -155,11 +155,11 @@ void Logic::pidLoop(Test::Debug * debug)
   {
     _motor.stop();
   }
-  else if (_output > _setpoint)
+  else if (_output > 0)
   {
     _motor.feed(_speed);
   }
-  else if (_output < _setpoint)
+  else if (_output < 0)
   {
     _motor.retract(_speed);
   }

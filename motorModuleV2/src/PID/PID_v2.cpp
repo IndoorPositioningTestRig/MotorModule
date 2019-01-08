@@ -55,6 +55,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  **********************************************************************************/
 bool PID::Compute(Test::Debug * debug)
 {
+
    if(!inAuto) return false;
    unsigned long now = millis();
    unsigned long timeChange = (now - lastTime);

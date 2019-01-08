@@ -21,11 +21,11 @@ void Motor::feed(unsigned short speed)
 void Motor::retract(unsigned short speed)
 {
   if (_hallSensor->isActive()) {  
+    stop();
+  } else {
     digitalWrite(PIN_MOTOR_CLOCKWISE, false);
     digitalWrite(PIN_MOTOR_COUNTER_CLOCKWISE, true);
     analogWrite(PIN_MOTOR_PWM, speed);
-  } else {
-    stop();
   }
 }
 

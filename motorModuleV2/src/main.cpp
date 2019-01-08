@@ -33,6 +33,10 @@ void commLoop()
     //Serial.println("message received");
     // Message received!
     // Check if the arduino is the target
+    Serial.print("got message with target: ");
+    Serial.println(message.target);
+    Serial.print("We are: ");
+    Serial.println(id.getId());
     if (message.target == 0 || message.target == id.getId())
     {
       logic.message(message, &communicator, &debug);

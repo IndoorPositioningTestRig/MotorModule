@@ -5,7 +5,7 @@ using namespace MotorLogic;
 int HallSensor::state = LOW;
 
 bool HallSensor::isActive() const {
-  return state == HIGH;
+  return state != HIGH;
 }
 
 void HallSensor::init() {
