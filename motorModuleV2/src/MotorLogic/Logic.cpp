@@ -24,7 +24,8 @@ Logic::Logic() : _reportDone(false),
   _pid->SetOutputLimits(-255, 255);
 }
 
-void Logic::init() {
+void Logic::init()
+{
   _hallSensor.init();
   _motor.init(&_hallSensor);
   _counter.init();
@@ -42,10 +43,10 @@ bool Logic::isForceMax()
   return _forceDetector.max;
 }
 
-void Logic::message(Communication::Message msg, Communication::Communicator * communicator, Test::Debug * debug)
+void Logic::message(Communication::Message msg, Communication::Communicator *communicator, Test::Debug *debug)
 {
   Serial.println("Logic message");
-  JsonObject& jsonMsg = _jsonBuffer.parseObject((char*)msg.data);
+  JsonObject &jsonMsg = _jsonBuffer.parseObject((char *)msg.data);
 
   const char *command = jsonMsg["command"];
   String commandStr = String(command);
@@ -54,24 +55,38 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
   Serial.print("type: ");
   Serial.println(msg.type);
 
-  if (msg.type == Communication::TYPES::REQUEST) {
+  if (msg.type == Communication::TYPES::REQUEST)
+  {
     // Handle requests
-    if (commandStr == "get_pid") {
+    if (commandStr == "get_pid")
+    {
       delay(500);
       double pid[3] = {_p, _i, _d};
       communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, pid, 3 * 4);
     }
-    else if (commandStr == "setPoint_debug") {
+    else if (commandStr == "setPoint_debug")
+    {
       // Move to setpoint and send debug data when done.
       double value = jsonMsg["setpoint"];
       _setpoint = value;
       _state = STATE_PID;
       _reportDone = true;
-    } else if (commandStr == "ping") {
-        _jsonBuffer.clear();
-        communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"ping\"}", 18);
     }
-  } else {
+    else if (commandStr == "setPointEncoder_debug")
+    {
+      double value = jsonMsg["setpoint"];
+      _setpoint = value;
+      _state = STATE_ENCODER;
+      _reportDone = true;
+    }
+    else if (commandStr == "ping")
+    {
+      _jsonBuffer.clear();
+      communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"ping\"}", 18);
+    }
+  }
+  else
+  {
     // Handle other message types
     if (commandStr == "setPoint")
     {
@@ -104,6 +119,11 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
       _reportDone = false;
       _state = STATE_PID;
     }
+    else if (commandStr == "executeEncoder")
+    {
+      _reportDone = false;
+      _state = STATE_ENCODER;
+    }
     else if (commandStr == "resetEncoder")
     {
       // Reset the encoder
@@ -126,9 +146,11 @@ void Logic::message(Communication::Message msg, Communication::Communicator * co
   _jsonBuffer.clear();
 }
 
-void Logic::pidLoop(Test::Debug * debug)
+//PID controlled loop to go to setpoint
+void Logic::pidLoop(Test::Debug *debug)
 {
-  if (_hallSensor.isActive()) {
+  if (_hallSensor.isActive())
+  {
     _motor.stop();
     _state = STATE_IDLE;
     return;
@@ -143,7 +165,8 @@ void Logic::pidLoop(Test::Debug * debug)
   {
     _state = STATE_IDLE;
     _motor.stop();
-    if (_reportDone) {
+    if (_reportDone)
+    {
       debug->log(_setpoint, _output, _input, 100);
       debug->print();
     }
@@ -165,11 +188,66 @@ void Logic::pidLoop(Test::Debug * debug)
   }
 }
 
-void Logic::loop(Test::Debug * debug)
+//loop to go to setpoint without PID control
+void Logic::encoderLoop(Test::Debug *debug)
+{
+  if (_hallSensor.isActive())
+  {
+    _motor.stop();
+    _state = STATE_IDLE;
+    return;
+  }
+  // calculate error between setpoint and input/encoder ticks
+  double error = abs(_setpoint - _input);
+
+  //set speed
+  if (error >= 50)
+  {
+    setSpeed(255);
+  }
+  else if (error >= 20 && error < 50)
+  {
+    setSpeed(128);
+  }
+  else if ( error < 20)
+  {
+    setSpeed(64);
+  }
+
+  //logging
+  debug->log(_setpoint, _speed, _input, millis());
+
+  // Check if the error or output are within margin and end the loop is if one is.
+  if (error < ERROR_MARGIN)
+  {
+    _motor.stop();
+    _state = STATE_IDLE;
+    if (_reportDone)
+    {
+      debug->log(_setpoint, _output, _input, 100);
+      debug->print();
+    }
+    return;
+  }
+  else if (_setpoint > _input)
+  {
+    _motor.feed(_speed);
+  }
+  else if (_setpoint < _input)
+  {
+    _motor.retract(_speed);
+  }
+}
+
+void Logic::loop(Test::Debug *debug)
 {
   _input = _counter.getCount();
   if (_state == STATE_PID)
   {
     pidLoop(debug);
+  }
+  else if (_state == STATE_ENCODER)
+  {
+    encoderLoop(debug);
   }
 }

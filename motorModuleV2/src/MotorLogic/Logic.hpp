@@ -14,6 +14,7 @@ namespace MotorLogic
 
 static const uint8_t STATE_IDLE = 0;
 static const uint8_t STATE_PID = 1;
+static const uint8_t STATE_ENCODER = 2;
 
 class Logic
 {
@@ -23,14 +24,16 @@ public:
 
   void init();
   void setSpeed(uint8_t speed);
-  void loop(Test::Debug * debug);
+  void loop(Test::Debug *debug);
 
   bool isForceMin();
   bool isForceMax();
 
-  void message(Communication::Message message, Communication::Communicator * communicator, Test::Debug * debug);
+  void message(Communication::Message message, Communication::Communicator *communicator, Test::Debug *debug);
+
 private:
-  void pidLoop(Test::Debug * debug);
+  void pidLoop(Test::Debug *debug);
+  void encoderLoop(Test::Debug *debug);
 
   bool _reportDone;
 
@@ -43,13 +46,13 @@ private:
   double _setpoint;
   double _output;
   double _input;
-  
+
   ForceDetector _forceDetector;
   HallSensor _hallSensor;
   Counter _counter;
   Motor _motor;
 
-  PID * _pid;
+  PID *_pid;
   StaticJsonBuffer<255> _jsonBuffer;
 
   constexpr static double ERROR_MARGIN = 10;
