@@ -46,6 +46,6 @@ void commLoop()
 
 void loop()
 {
-  logic.loop(&debug);
+  logic.loop(&debug, &communicator, &id);
   commLoop(); 
 }

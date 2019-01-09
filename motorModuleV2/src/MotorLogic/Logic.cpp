@@ -33,6 +33,8 @@ void Logic::init()
   _counter.init();
   _input = _counter.getCount();
   _forceDetector.init();
+  _home.init(&_hallSensor, &_motor, &_forceDetector);
+  _homeSupport.init(&_hallSensor, &_motor, &_forceDetector);
 }
 
 bool Logic::isForceMin()
@@ -96,6 +98,14 @@ void Logic::message(Communication::Message msg, Communication::Communicator *com
       {
         _state = STATE_HOME;
       }
+    }
+  }
+  else if (msg.type == Communication::TYPES::RESPONSE)
+  {
+    if (_state == STATE_HOME || _state == STATE_HOMESUPPORT)
+    {
+      _state = STATE_IDLE;
+      _motor.stop();
     }
   }
   else
@@ -219,18 +229,6 @@ void Logic::encoderLoop(Test::Debug *debug)
   {
     setSpeed(0.003 * pow(error, 2) + 30);
   }
-  // if (error >= 300)
-  // {
-  //   setSpeed(255);
-  // }
-  // else if (error >= 100 && error < 300)
-  // {
-  //   setSpeed(128);
-  // }
-  // else if (error < 100)
-  // {
-  //   setSpeed(64);
-  // }
 
   // logging
   long currentTime = millis();
@@ -267,7 +265,7 @@ void Logic::encoderLoop(Test::Debug *debug)
   }
 }
 
-void Logic::loop(Test::Debug *debug)
+void Logic::loop(Test::Debug *debug, Communication::Communicator *communicator, Id *id)
 {
   _input = _counter.getCount();
   if (_state == STATE_PID)
@@ -280,8 +278,16 @@ void Logic::loop(Test::Debug *debug)
   }
   else if (_state == STATE_HOME)
   {
+    bool isHome = _home.loop();
+    if (isHome)
+    {
+      _counter.reset();
+      _state = STATE_IDLE;
+      communicator->write_c(id->getId(), 0, Communication::TYPES::RESPONSE, "{\"result\":\"true\"}", 17);
+    }
   }
   else if (_state == STATE_HOMESUPPORT)
   {
+    bool isHomeSupport = _homeSupport.loop();
   }
 }

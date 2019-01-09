@@ -8,6 +8,10 @@
 #include "../Communication/Message.hpp"
 #include <ArduinoJson.h>
 #include "HallSensor.hpp"
+#include "Homing/Home.hpp"
+#include "Homing/HomeSupport.hpp"
+#include "Id.hpp"
+#include "Communication/Communicator.hpp"
 
 namespace MotorLogic
 {
@@ -26,7 +30,7 @@ public:
 
   void init();
   void setSpeed(uint8_t speed);
-  void loop(Test::Debug *debug);
+  void loop(Test::Debug *debug, Communication::Communicator *communicator, Id *id);
 
   bool isForceMin();
   bool isForceMax();
@@ -54,6 +58,8 @@ private:
   HallSensor _hallSensor;
   Counter _counter;
   Motor _motor;
+  Homing::Home _home;
+  Homing::HomeSupport _homeSupport;
 
   PID *_pid;
   StaticJsonBuffer<255> _jsonBuffer;

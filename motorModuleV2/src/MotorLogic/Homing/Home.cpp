@@ -2,6 +2,23 @@
 
 using namespace Homing;
 
-void Home::loop() {
-    
+void Home::init(MotorLogic::HallSensor *hallsensor, MotorLogic::Motor *motor, MotorLogic::ForceDetector *forceDetector)
+{
+    _hallSensor = hallsensor;
+    _motor = motor;
+    _forceDetector = forceDetector;
+}
+
+bool Home::loop()
+{
+    if (_hallSensor->isActive())
+    {
+        _motor->stop();
+        return true;
+    }
+    else
+    {
+        _motor->retract(64);
+        return false;
+    }
 }

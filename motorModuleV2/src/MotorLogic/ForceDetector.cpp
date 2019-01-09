@@ -27,9 +27,13 @@ void ForceDetector::init()
 void ForceDetector::triggerMax()
 {
   max = digitalRead(PIN_MAX_FORCE) == HIGH;
+  Serial.print("max switch: ");
+  Serial.println(max);
 }
 
 void ForceDetector::triggerMin()
 {
   min = digitalRead(PIN_MIN_FORCE) == HIGH;
+  Serial.print("min switch: ");
+  Serial.println(min);
 }
