@@ -76,6 +76,12 @@ void Logic::message(Communication::Message msg, Communication::Communicator *com
     {
       double value = jsonMsg["setpoint"];
       _setpoint = value;
+      Serial.print("_setpoint: ");
+      Serial.println(_setpoint);
+      Serial.print("input: ");
+      Serial.println(_input);
+      Serial.print("error: ");
+      Serial.println(abs(_setpoint - _input));
       _state = STATE_ENCODER;
       _reportDone = true;
     }
@@ -222,9 +228,10 @@ void Logic::encoderLoop(Test::Debug *debug)
   {
     _motor.stop();
     _state = STATE_IDLE;
+    Serial.print("done error: ");
+    Serial.println(error);
     if (_reportDone)
     {
-      debug->log(_setpoint, _output, _input, 100);
       debug->print();
     }
     return;
