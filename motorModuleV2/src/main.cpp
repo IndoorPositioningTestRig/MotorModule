@@ -18,7 +18,7 @@ void setup()
   while (!Serial)
     ;
 #endif
-  id.putId(1);
+  //id.putId(1);
 
   logic.init();
   communicator.init();
