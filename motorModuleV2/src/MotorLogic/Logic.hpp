@@ -46,6 +46,7 @@ private:
   double _setpoint;
   double _output;
   double _input;
+  long _lastTime;
 
   ForceDetector _forceDetector;
   HallSensor _hallSensor;
