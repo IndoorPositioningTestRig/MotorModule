@@ -86,6 +86,17 @@ void Logic::message(Communication::Message msg, Communication::Communicator *com
       _jsonBuffer.clear();
       communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"ping\"}", 18);
     }
+    else if (commandStr == "home")
+    {
+      if (jsonMsg["support"])
+      {
+        _state = STATE_HOMESUPPORT;
+      }
+      else
+      {
+        _state = STATE_HOME;
+      }
+    }
   }
   else
   {
@@ -204,8 +215,9 @@ void Logic::encoderLoop(Test::Debug *debug)
 
   //set speed
   setSpeed(255);
-  if(error < 250){
-    setSpeed(0.003* pow(error, 2) + 30);
+  if (error < 250)
+  {
+    setSpeed(0.003 * pow(error, 2) + 30);
   }
   // if (error >= 300)
   // {
@@ -265,5 +277,11 @@ void Logic::loop(Test::Debug *debug)
   else if (_state == STATE_ENCODER)
   {
     encoderLoop(debug);
+  }
+  else if (_state == STATE_HOME)
+  {
+  }
+  else if (_state == STATE_HOMESUPPORT)
+  {
   }
 }

@@ -15,6 +15,8 @@ namespace MotorLogic
 static const uint8_t STATE_IDLE = 0;
 static const uint8_t STATE_PID = 1;
 static const uint8_t STATE_ENCODER = 2;
+static const uint8_t STATE_HOME = 3;
+static const uint8_t STATE_HOMESUPPORT = 4;
 
 class Logic
 {
