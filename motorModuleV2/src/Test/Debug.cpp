@@ -4,7 +4,7 @@
 
 using namespace Test;
 
-Debug::Debug(Communication::Communicator * communicator) : _communicator(communicator) {}
+Debug::Debug(Communication::Communicator * communicator) : _communicator(communicator), _position(0) {}
 
 void Debug::log(double setpoint, double output, double encoder, long deltatime) {
  if(_position < MAX_LEN){

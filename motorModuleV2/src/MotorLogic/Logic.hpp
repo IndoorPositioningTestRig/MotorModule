@@ -56,7 +56,7 @@ private:
   PID *_pid;
   StaticJsonBuffer<255> _jsonBuffer;
 
-  constexpr static double ERROR_MARGIN = 10;
+  constexpr static double ERROR_MARGIN = 1;
   constexpr static double OUTPUT_MARGIN = 20;
 };
 } // namespace MotorLogic

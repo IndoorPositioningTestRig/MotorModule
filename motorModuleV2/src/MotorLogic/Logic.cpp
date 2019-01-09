@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Logic.hpp"
 #include "PID/PID_v2.h"
+#include <math.h>
 
 using namespace MotorLogic;
 
@@ -77,12 +78,6 @@ void Logic::message(Communication::Message msg, Communication::Communicator *com
     {
       double value = jsonMsg["setpoint"];
       _setpoint = value;
-      Serial.print("_setpoint: ");
-      Serial.println(_setpoint);
-      Serial.print("input: ");
-      Serial.println(_input);
-      Serial.print("error: ");
-      Serial.println(abs(_setpoint - _input));
       _state = STATE_ENCODER;
       _reportDone = true;
     }
@@ -208,23 +203,29 @@ void Logic::encoderLoop(Test::Debug *debug)
   double error = abs(_setpoint - _input);
 
   //set speed
-  if (error >= 50)
-  {
-    setSpeed(255);
+  setSpeed(255);
+  if(error < 250){
+    setSpeed(0.003* pow(error, 2) + 30);
   }
-  else if (error >= 20 && error < 50)
-  {
-    setSpeed(128);
-  }
-  else if ( error < 20)
-  {
-    setSpeed(64);
-  }
+  // if (error >= 300)
+  // {
+  //   setSpeed(255);
+  // }
+  // else if (error >= 100 && error < 300)
+  // {
+  //   setSpeed(128);
+  // }
+  // else if (error < 100)
+  // {
+  //   setSpeed(64);
+  // }
 
   // logging
   long currentTime = millis();
   long deltaTime = currentTime - _lastTime;
-  if (deltaTime >= 100) {
+  if (deltaTime >= 100)
+  {
+    _lastTime = currentTime;
     debug->log(_setpoint, _speed, _input, currentTime);
   }
 
@@ -233,11 +234,13 @@ void Logic::encoderLoop(Test::Debug *debug)
   {
     _motor.stop();
     _state = STATE_IDLE;
-    Serial.print("done error: ");
-    Serial.println(error);
     if (_reportDone)
     {
-      debug->log(_setpoint, _speed, _input, 100);
+      _input = _counter.getCount();
+      debug->log(_setpoint, 0, _input, millis());
+      delay(500);
+      _input = _counter.getCount();
+      debug->log(_setpoint, 0, _input, millis());
       debug->print();
     }
     return;
