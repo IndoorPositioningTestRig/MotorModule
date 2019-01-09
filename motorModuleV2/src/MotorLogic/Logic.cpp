@@ -17,7 +17,8 @@ Logic::Logic() : _reportDone(false),
                  _d(1),
                  _setpoint(0),
                  _output(0),
-                 _input(0)
+                 _input(0),
+                 _lastTime(0)
 {
   _pid = new PID(&_input, &_output, &_setpoint, _p, _i, _d, DIRECT);
   _pid->SetMode(AUTOMATIC);
@@ -220,8 +221,12 @@ void Logic::encoderLoop(Test::Debug *debug)
     setSpeed(64);
   }
 
-  //logging
-  debug->log(_setpoint, _speed, _input, millis());
+  // logging
+  long currentTime = millis();
+  long deltaTime = currentTime - _lastTime;
+  if (deltaTime >= 100) {
+    debug->log(_setpoint, _speed, _input, currentTime);
+  }
 
   // Check if the error or output are within margin and end the loop is if one is.
   if (error < ERROR_MARGIN)
@@ -232,6 +237,7 @@ void Logic::encoderLoop(Test::Debug *debug)
     Serial.println(error);
     if (_reportDone)
     {
+      debug->log(_setpoint, _speed, _input, 100);
       debug->print();
     }
     return;
