@@ -15,5 +15,4 @@ private:
     int id;
 };
 
-
 #endif

@@ -1,67 +1,175 @@
 @startuml MotorModuleV2
 
 class Main {
-
+    + void commLoop()
+    + void loop()
 }
 
+class Id{
+    - id
+    + putId
+    + getId
+}
+
+package Communication{
 ' Sends and listens to the communication potocol.
-class Communication {
+    class Communicator {
+        + void init()
+        + bool receive()
+        + void setMode()
+        + Message decodeMessage()
+        + void write_c()
+    }
 
-}
+    class Message {
+        - uint8_t sender
+        - uint8_t target
+        - uint8_t type
+        - uint8_t length
+        - uint8_t  data[]
+    }
 
-' Determines what the arduino should be doing
-class StateMachine {
-
-}
-
-' Move the motor based on communication (through StateMachine) 
-class Mover {
-
-}
-
-' Calibrate the motor by determining the length of the cable
-class Calibrator {
-
+    class SerialWrapper {
+        + void begin()
+        + void waitReady()
+        + int available()
+        + int read()
+        + size_t readBytes()
+        + size_t write()
+        + size_t writeFrame()
+        + void flush()
+    }
 }
 
 package MotorLogic {
-    ' This controls what the motor does based on what it received through
-    ' the communication protocal and the readings from the encoder and endswitch.
-    class Logic {
-        - int speed
-
-        + void move(int len)
-        + void setSpeed(int speed)    
-    }
-
     ' Counts how far the rope has moved 
-    class Encoder {
-
+    class Counter {
+        + void init()
+        + long getCount()
+        + void reset()
     }
-
+    
     ' Detects wether the rope is stretching or not
     ' and in which direction
     class ForceDetector {
+        + void init()
+        + void triggerMax()
+        + void triggerMin()
+        - bool max
+        - bool min
+    }
 
+    class HallSensor {
+        + void init()
+        + bool isActive()
+        - int state
+    }
+
+    class Logic {
+        - ForceDetector _forceDetector
+        - HallSensor _hallSensor
+        - Counter _counter
+        - Motor _motor
+        - Home _home
+        - HomeSupport _homeSupport
+        - PID _pid
+
+        + void init()
+        + setSpeed()
+        + loop()
+        + void message()
+        + void pidLoop()
+        + void encoderLoop()   
     }
 
     ' Controls the motor
     class Motor {
+        - HallSensor _hallSensor
+        
+        + void init()
+        + void retract()
+        + void feed()
+        + void stop()
+    }
 
+    class RotaryEncoder {
+        - long _position
+        + long getPosition()
+        + void setPosition()
+        + void tick()
+    }
+
+    package Homing {
+        Class Home {
+            - HallSensor _hallSensor
+            - Motor _motor
+            - ForceDetector _forceDetector
+
+            + void init()
+            + bool loop()
+        }
+
+        Class HomeSupport {
+            - HallSensor _hallSensor
+            - Motor _motor
+            - ForceDetector _forceDetector
+
+            + void init()
+            + bool loop()
+        }
     }
 }
 
-Main --> StateMachine
-StateMachine --> Mover
-StateMachine --> Communication
-StateMachine --> Calibrator 
+package PID {
+    Class PID {
+        + PID PID
+        + void SetMode()
+        + bool Compute()
+        + void setOutputlimits()
+        + void SetTunings()
+    }
+}
 
-Mover --> Logic
-Calibrator --> Logic
+package Test {
+    Class Debug {
+        - Communicator _communicator
 
-Logic --> Encoder
+        + void log()
+        + void print()
+    }
+}
+
+Main --> Logic
+Main --> Id
+Main --> Communicator
+Main --> Debug
+
+Motor --> HallSensor
+
+Debug --> Communicator
+
+Home --> HallSensor
+Home --> Motor
+Home --> ForceDetector
+
+HomeSupport --> HallSensor
+HomeSupport --> Motor
+HomeSupport --> ForceDetector
+
 Logic --> ForceDetector
-Logic --> Motor 
+Logic --> HallSensor
+Logic --> Counter
+Logic --> Motor
+Logic --> Home
+Logic --> HomeSupport
+Logic --> PID
+
+Counter --> RotaryEncoder
+
+Communicator --> SerialWrapper
+Communicator --> Message
+
+
 
 @enduml
 
