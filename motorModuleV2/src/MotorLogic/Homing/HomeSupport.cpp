@@ -15,11 +15,7 @@ bool HomeSupport::loop()
     {
         _motor->retract(64);
     }
-    else if (_forceDetector->max)
-    {
-        _motor->feed(64);
-    }
-    else
+    else (_forceDetector->max)
     {
         _motor->feed(64);
     }

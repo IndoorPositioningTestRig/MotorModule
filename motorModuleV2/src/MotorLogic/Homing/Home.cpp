@@ -21,4 +21,7 @@ bool Home::loop()
         _motor->retract(64);
         return false;
     }
+    if(_forceDetector->max){
+        _motor->stop();
+    }
 }
