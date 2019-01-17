@@ -14,10 +14,19 @@ bool HomeSupport::loop()
     if (_forceDetector->min)
     {
         _motor->retract(64);
+        Serial.println("min, retract");
     }
-    else if(_forceDetector->max)
+    else if (_forceDetector->max)
     {
         _motor->feed(64);
+        Serial.println("max, feed");
+
+    }
+    else
+    {
+        _motor->feed(64);
+        Serial.println("nothing, feed");
+
     }
     return false;
 }

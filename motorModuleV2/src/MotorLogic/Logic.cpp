@@ -86,7 +86,8 @@ void Logic::message(Communication::Message msg, Communication::Communicator *com
     else if (commandStr == "ping")
     {
       _jsonBuffer.clear();
-      communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"ping\"}", 18);
+      delay(1000);
+      communicator->write_c(0, msg.sender, Communication::TYPES::RESPONSE, "{\"command\":\"pong\"}", 18);
     }
     else if (commandStr == "home")
     {
