@@ -16,12 +16,13 @@ bool Home::loop()
         _motor->stop();
         return true;
     }
+    // else if (_forceDetector->max)
+    // {
+    //     _motor->retract(40);
+    // }
     else
     {
         _motor->retract(64);
-        return false;
     }
-    if(_forceDetector->max){
-        _motor->stop();
-    }
+    return false;
 }
